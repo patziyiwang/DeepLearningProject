@@ -16,15 +16,26 @@ class LSTM(nn.Module):
         self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.num_layers)
         self.linear = nn.Linear(self.hidden_dim, self.output_dim)
 
-    def init_hidden(self):
-        return (torch.zeros(self.num_layers, self.batch_size, self.hidden_dim), torch.zeros(self.num_layers, self.batch_size, self.hidden_dim))
+    #Initialize hidden states h0, c0. Default is zero
+    def init_hidden_zeros(self):
+        self.h0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
+        self.co = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
 
-    def __format__(self, input):
-        lstm_out, self.hidden = self.lstm(input.view(len(input), self.batch_size, -1))
+    def init_hidden(self, h0, c0):
+        self.h0 = h0
+        self.c0 = c0
+
+    #Forward pass
+    def forward(self, input):
+        #Input to lstm has shape (seq_length, batch_size, input_size)
+        #LSTM output has shape(seq_length, batch_size, hidden_size)
+        #TODO: transform input into Rd
+        lstm_out, self.hidden = self.lstm(input.view(len(input), self.batch_size, -1), (h0, c0))
         y_pred = self.linear(lstm_out)
 
 
 def train(model, data, num_epochs):
+
 
 if __name__ == "__main__":
 
@@ -38,13 +49,14 @@ if __name__ == "__main__":
     learning_rate = 0.0005
     weight_decay = 0.0
 
+    #Create LSTM model
     model = LSTM(input_size, hidden_size, batch, output_dim=output_size, num_layers=n_layers)
 
     #Check if cuda is available
     if torch.cuda.is_available():
         model.cuda()
 
-    criterion = nn.MSELoss
+    criterion = nn.MSELoss #Can experiment with different ones
     optimizer = optim.Adam(lr=learning_rate, weight_decay=weight_decay)
 
     train(model, data, n_epochs)
