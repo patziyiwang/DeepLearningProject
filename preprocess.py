@@ -3,9 +3,9 @@ import errno
 import glob
 
 
-def GetCoordinate():
+def GetCoordinate(data_dir):
     coordinate = []
-    path = './label_2/*.txt'
+    path = data_dir + '*.txt'
     files = glob.glob(path)
     for name in files:
         try:
@@ -45,7 +45,7 @@ def createBoxes(images, coordinates):
 
 
 def main():
-    cc = GetCoordinate()
+    cc = GetCoordinate('./label_2/')
     print(len(cc))
 
 main()
