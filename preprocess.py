@@ -27,6 +27,7 @@ def GetCoordinate():
                 raise
 
 
+
         
 
 
@@ -43,3 +44,9 @@ def createBoxes(images, coordinates):
                 images[pixel_start_y+ri, pixel_start_x+ci, n] = 1
     return images
 
+
+def main():
+    cc = GetCoordinate()
+    print(len(cc))
+
+main()
