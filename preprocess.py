@@ -1,7 +1,7 @@
 
 import errno
 import glob
-
+import numpy as np
 
 def GetCoordinate(data_dir):
     coordinate = []
@@ -46,7 +46,7 @@ def createBoxes(images, coordinates):
 
 def main():
     cc = GetCoordinate('./label_2/')
-    print(len(cc))
-    print(cc)
+    imagesinput = np.zeros((32,32,7481))
+    images = createBoxes(imagesinput, cc)
 
-main()
+

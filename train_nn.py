@@ -19,7 +19,7 @@ class LSTM(nn.Module):
     #Initialize hidden states h0, c0. Default is zero
     def init_hidden_zeros(self):
         self.h0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
-        self.co = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
+        self.c0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
 
     def init_hidden(self, h0, c0):
         self.h0 = h0
