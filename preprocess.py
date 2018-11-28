@@ -1,4 +1,4 @@
-
+import numpy as np
 import errno
 import glob
 
@@ -46,6 +46,8 @@ def createBoxes(images, coordinates):
 
 def main():
     cc = GetCoordinate('./label_2/')
+    images = np.zeros((500,500,7481))
+    new_images = createBoxes(images, cc)
     print(len(cc))
 
 main()
