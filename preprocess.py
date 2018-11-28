@@ -47,5 +47,6 @@ def createBoxes(images, coordinates):
 def main():
     cc = GetCoordinate('./label_2/')
     print(len(cc))
+    print(cc)
 
 main()
