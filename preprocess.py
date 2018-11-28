@@ -21,10 +21,11 @@ def GetCoordinate():
                         dic['y2'] = l_s[7]
                         cars.append(dic)
             coordinate.append(cars)
-            return coordinate
+
         except IOError as exc:
             if exc.errno != errno.EISDIR:
                 raise
+    return coordinate
 
 
 
