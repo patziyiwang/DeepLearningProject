@@ -1,17 +1,17 @@
 
-import os
-
-
+import errno
+import glob
 
 
 def GetCoordinate():
-    directory = './label_2'
     coordinate = []
-    for filename in os.listdir(directory):
-        if filename.endswith(".txt"):
-            cars = []
-            with open('./label_2/000002.txt') as o:
-                for i, t in enumerate(o.readlines(), 1):
+    path = './label_2/*.txt'
+    files = glob.glob(path)
+    for name in files:
+        try:
+            with open(name) as f:
+                cars = []
+                for i, t in enumerate(f.readlines(), 1):
                     l_s = t.split()
                     dic = {}
                     if l_s[0] == 'Car':
@@ -20,11 +20,14 @@ def GetCoordinate():
                         dic['x2'] = l_s[6]
                         dic['y2'] = l_s[7]
                         cars.append(dic)
-        coordinate.append(cars)
-    return coordinate
+            coordinate.append(cars)
+            return coordinate
+        except IOError as exc:
+            if exc.errno != errno.EISDIR:
+                raise
+
+
         
-
-
 
 
 
