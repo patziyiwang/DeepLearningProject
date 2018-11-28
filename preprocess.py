@@ -21,11 +21,12 @@ def GetCoordinate():
                         dic['y2'] = l_s[7]
                         cars.append(dic)
             coordinate.append(cars)
-            return coordinate
+
         except IOError as exc:
             if exc.errno != errno.EISDIR:
                 print("error occurred here")
                 raise
+    return coordinate
 
 def createBoxes(images, coordinates):
     seq_length = len(coordinates)
