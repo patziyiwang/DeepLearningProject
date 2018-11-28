@@ -2,11 +2,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.data import Dataset, DataLoader
+
+dtype = torch.Tensor
 
 
 class LSTM(nn.Module):
     def __init__(self, input_dim, hidden_dim, batch_size, output_dim=1, num_layers=1):
-        super(LSTM, self).__init()
+        super(LSTM, self).__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.batch_size = batch_size
@@ -15,6 +18,7 @@ class LSTM(nn.Module):
 
         self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.num_layers)
         self.linear = nn.Linear(self.hidden_dim, self.output_dim)
+
 
     #Initialize hidden states h0, c0. Default is zero
     def init_hidden_zeros(self):
@@ -34,7 +38,24 @@ class LSTM(nn.Module):
         y_pred = self.linear(lstm_out)
 
 
-def train(model, data, num_epochs):
+def train(model, data, num_epochs, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
+
+    dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
+
+    loss_fn = nn.MSELoss  # Can experiment with different ones
+    optimizer = optim.Adam(lr=lr, weight_decay=weight_decay)
+
+    X = dtype(np.zeros((seq_length, batch_size, input_size)))
+    Y = dtype(np.zeros((seq_length, batch_size, input_size)))
+
+    for epoch in range(n_epochs):
+        for batch_idx, batch in enumerate(dataloader):
+            X = batch["input"]
+            Y = batch["output"]
+            optimizer.zero_grad()
+            loss_fn(model(X), Y).backward()
+            optimizer.step()
+
 
 
 if __name__ == "__main__":
@@ -43,7 +64,7 @@ if __name__ == "__main__":
     input_size = 32
     hidden_size = 64
     output_size = 32
-    batch = 32
+    batch = 64
     n_layers = 2
     n_epochs = 100
     learning_rate = 0.0005
@@ -56,7 +77,4 @@ if __name__ == "__main__":
     if torch.cuda.is_available():
         model.cuda()
 
-    criterion = nn.MSELoss #Can experiment with different ones
-    optimizer = optim.Adam(lr=learning_rate, weight_decay=weight_decay)
-
-    train(model, data, n_epochs)
+    train(model, data, n_epochs, batch_size=batch, lr=learning_rate, weight_decay=weight_decay)
