@@ -45,19 +45,13 @@ class LSTM(nn.Module):
         return y_pred
 
 
-<<<<<<< Updated upstream
-def train(model, data, n_epochs, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
 
-    dataset = make
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-=======
 def train(model, data, num_epochs, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
     length = 10
     data_dir = './label_2/'
     data = AutorallyDataset(length, data_dir)
     data.save()
     dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
->>>>>>> Stashed changes
 
     loss_fn = nn.MSELoss  # Can experiment with different ones
     optimizer = optim.Adam(params=model.parameters(),lr=lr, weight_decay=weight_decay)

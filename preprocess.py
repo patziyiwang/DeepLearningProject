@@ -1,7 +1,6 @@
 import numpy as np
 import errno
 import glob
-import numpy as np
 import pickle
 
 def GetCoordinate(data_dir):
@@ -57,7 +56,7 @@ def getScaling(dim):
 def saveImages(images, name):
     pickle.dump(images, open(name + ".pkl", "wb"))
 
-def main():
+if __name__ == "main":
     cc = GetCoordinate('./label_2/')
     image_dim = (512, 1392)
     image_dim, scaling = getScaling(image_dim)
@@ -67,5 +66,3 @@ def main():
     images = np.zeros((7481,image_dim[0],image_dim[1]))
     new_images = createBoxes(images, cc, scaling)
     saveImages(new_images, 'bbox_data')
-
-main()
