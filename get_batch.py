@@ -14,17 +14,16 @@ import pdb
 
 class AutorallyDataset(Dataset):
   'Characterizes a dataset for PyTorch'
-  def __init__(self, ):
+  def __init__(self, length):
       self.dataset = []
-      self.make_dataset()
+      self.make_dataset(length)
       self.GetCoordinate()
       self.createBoxes()
 
 
 
-  def make_dataset(self):
+  def make_dataset(self, length):
       self.dataset = []
-      length = 10
       # try:
       #     with open('bbox_data.pkl', 'rb') as f:
       #          unpickler= pickle.load(f)
@@ -34,16 +33,16 @@ class AutorallyDataset(Dataset):
 
       cc = self.GetCoordinate()
       print(cc)
-      images0 = np.zeros((512, 1392, 7481))
+      images0 = np.zeros((7481, 512, 1392))
       images = self.createBoxes(images0, cc)
-      num = images.shape[2]
+      num = images.shape[0]
       #pdb.set_trace()
       for i in range(num-length-2):
           for j in range(0,length-1,2):
-              X = np.stack((images[:,:,i+j], images[:,:,i+j+1]), axis=-1)
+              X = np.stack((images[i+j,:,:], images[i+j+1,:,:]), axis=0)
               #pdb.set_trace()
-              Y = np.stack((images[:,:,i+j+1], images[:,:,i+j+2]), axis=-1)
-          self. dataset.append({"x": X, "y": Y})
+              Y = np.stack((images[i+j+1,:,:], images[i+j+2,:,:]), axis=0)
+          self. dataset.append({"X": X, "Y": Y})
       return self.dataset
 
   def __len__(self):
@@ -60,7 +59,7 @@ class AutorallyDataset(Dataset):
 
   def GetCoordinate(self):
       coordinate = []
-      path = './label_2' + '*.txt'
+      path = './label_2/' + '*.txt'
       #path = './label_2' + '*.txt'
       files = glob.glob(path)
       for name in files:

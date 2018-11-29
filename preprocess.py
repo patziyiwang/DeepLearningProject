@@ -50,7 +50,7 @@ def saveImages(images, name):
 def main():
     cc = GetCoordinate('./label_2/')
     print(cc)
-    images = np.zeros((512,1392,7481))
+    images = np.zeros((7481,512,1392))
     new_images = createBoxes(images, cc)
     saveImages(new_images, 'bbox_data')
 

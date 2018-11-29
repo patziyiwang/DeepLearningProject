@@ -9,7 +9,7 @@ dtype = torch.Tensor
 
 
 class LSTM(nn.Module):
-    def __init__(self, input_dim, enc_dim, hidden_dim, batch_size, output_dim=1, num_layers=1):
+    def __init__(self, input_dim, enc_dim, hidden_dim, batch_size, output_dim=1, num_layers=1, h0=None, c0=None):
         super(LSTM, self).__init__()
         self.input_dim = input_dim
         self.enc_dim = enc_dim
@@ -22,22 +22,21 @@ class LSTM(nn.Module):
         self.encoder = nn.Linear(self.input_dim, self.enc_dim)
         self.decoder = nn.Linear(self.hidden_dim, self.output_dim)
 
+        #Initialize hidden states, default is zero
+        if h0 is None:
+            self.h0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
+            self.c0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
+        else:
+            self.h0 = h0
+            self.c0 = c0
 
-    #Initialize hidden states h0, c0. Default is zero
-    def init_hidden_zeros(self):
-        self.h0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
-        self.c0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
-
-    def init_hidden(self, h0, c0):
-        self.h0 = h0
-        self.c0 = c0
 
     #Forward pass
     def forward(self, input):
         #Input to lstm has shape (seq_length, batch_size, input_size)
         #LSTM output has shape(seq_length, batch_size, hidden_size)
         enc_input = self.encoder(input)
-        lstm_out, self.hidden = self.lstm(enc_input.view(len(input), self.batch_size, -1), (h0, c0))
+        lstm_out, self.hidden = self.lstm(enc_input.view(len(input), self.batch_size, -1), (self.h0, self.c0))
         y_pred = self.decoder(lstm_out)
         return y_pred
 
@@ -71,7 +70,11 @@ def loadData(data_path, file_name):
 
 
 def save_model(model_path, file_name, model):
-    pickle.dump(model, open(model_path + file_name + ".pkl", "wb"))
+    torch.save(model, model_path + file_name + ".pt")
+
+
+def load_model(model_path, file_name):
+    return torch.load(model_path + file_name + ".pt")
 
 
 if __name__ == "__main__":
