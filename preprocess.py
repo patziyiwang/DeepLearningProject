@@ -29,29 +29,43 @@ def GetCoordinate(data_dir):
                 raise
     return coordinate
 
-def createBoxes(images, coordinates):
+def createBoxes(images, coordinates, scaling):
     seq_length = len(coordinates)
     for n in range(seq_length):
+        if (n % 100 == 0):
+            print("Processing the " + str(n) + "th image\n")
         frame = coordinates[n]
         for i in range(len(frame)):
             car = frame[i]
-            pixel_start_x = int(round(float(car['x1'])))
-            pixel_start_y = int(round(float(car['y1'])))
-            pixel_end_x = int(round(float(car['x2'])))
-            pixel_end_y = int(round(float(car['y2'])))
+            pixel_start_x = int(round(float(car['x1'])/scaling))
+            pixel_start_y = int(round(float(car['y1'])/scaling))
+            pixel_end_x = int(round(float(car['x2'])/scaling))
+            pixel_end_y = int(round(float(car['y2'])/scaling))
             for ri in range(pixel_end_y-pixel_start_y+1):
                 for ci in range(pixel_end_x-pixel_start_x+1):
-                    images[pixel_start_y+ri, pixel_start_x+ci, n] = 1
+                    images[n, pixel_start_y+ri, pixel_start_x+ci] = 1
+    print("Processing complete!\n")
     return images
+
+def getScaling(dim):
+    scaling = 1
+    while (dim[0]%2 == 0 and dim[1]%2 == 0 and min(dim)>32):
+        dim = (dim[0]/2, dim[1]/2)
+        scaling *= 2
+    return dim, scaling
 
 def saveImages(images, name):
     pickle.dump(images, open(name + ".pkl", "wb"))
 
 def main():
     cc = GetCoordinate('./label_2/')
-    print(cc)
-    images = np.zeros((7481,512,1392))
-    new_images = createBoxes(images, cc)
+    image_dim = (512, 1392)
+    image_dim, scaling = getScaling(image_dim)
+    print(image_dim)
+    import pdb
+    pdb.set_trace()
+    images = np.zeros((7481,image_dim[0],image_dim[1]))
+    new_images = createBoxes(images, cc, scaling)
     saveImages(new_images, 'bbox_data')
 
 main()
