@@ -49,12 +49,9 @@ def saveImages(images, name):
 
 def main():
     cc = GetCoordinate('./label_2/')
+    print(cc)
     images = np.zeros((512,1392,7481))
     new_images = createBoxes(images, cc)
     saveImages(new_images, 'bbox_data')
-<<<<<<< Updated upstream
-    print(len(cc))
-=======
-    pdb.set_trace()
+
 main()
->>>>>>> Stashed changes

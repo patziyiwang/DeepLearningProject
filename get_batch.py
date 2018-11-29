@@ -32,16 +32,19 @@ class AutorallyDataset(Dataset):
       # except EOFError:
       #     print(os.path.getsize('bbox_data.pkl'))
 
-      cc = self.GetCoordinate('./label_2')
+      cc = self.GetCoordinate()
+      print(cc)
       images0 = np.zeros((512, 1392, 7481))
       images = self.createBoxes(images0, cc)
       num = images.shape[2]
       #pdb.set_trace()
       for i in range(num-length-2):
           for j in range(0,length-1,2):
-              X = np.concatenate((images[:,:,i+j], images[:,:,i+j+1]), axis=0)
-              Y = np.concatenate((images[:,:,i+j+1], images[:,:,i+j+2]), axis=0)
+              X = np.stack((images[:,:,i+j], images[:,:,i+j+1]), axis=-1)
+              #pdb.set_trace()
+              Y = np.stack((images[:,:,i+j+1], images[:,:,i+j+2]), axis=-1)
           self. dataset.append({"x": X, "y": Y})
+      return self.dataset
 
   def __len__(self):
       'Denotes the total number of samples'
@@ -55,9 +58,9 @@ class AutorallyDataset(Dataset):
   def save(self):
       pickle.dump(self, open(self.name + ".pkl", "wb"))
 
-  def GetCoordinate(self, data_dir):
+  def GetCoordinate(self):
       coordinate = []
-      path = data_dir + '*.txt'
+      path = './label_2' + '*.txt'
       #path = './label_2' + '*.txt'
       files = glob.glob(path)
       for name in files:
@@ -74,6 +77,7 @@ class AutorallyDataset(Dataset):
                           dic['y2'] = l_s[7]
                           cars.append(dic)
               coordinate.append(cars)
+              print(coordinate)
 
           except IOError as exc:
               if exc.errno != errno.EISDIR:
@@ -101,7 +105,8 @@ class AutorallyDataset(Dataset):
 
 def main():
     dataset = AutorallyDataset()
-    dataset.save()
+    getdata = dataset.GetCoordinate()
+    getdata.save()
 
 
 main()
