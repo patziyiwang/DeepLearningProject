@@ -2,6 +2,7 @@ import numpy as np
 import errno
 import glob
 import numpy as np
+import pickle
 
 def GetCoordinate(data_dir):
     coordinate = []
@@ -31,21 +32,24 @@ def GetCoordinate(data_dir):
 def createBoxes(images, coordinates):
     seq_length = len(coordinates)
     for n in range(seq_length):
-        frame = seq_length[n]
+        frame = coordinates[n]
         for i in range(len(frame)):
             car = frame[i]
-            pixel_start_x = int(round(car['x1']))
-            pixel_start_y = int(round(car['y1']))
-            pixel_end_x = int(round(car['x2']))
-            pixel_end_y = int(round(car['y2']))
+            pixel_start_x = int(round(float(car['x1'])))
+            pixel_start_y = int(round(float(car['y1'])))
+            pixel_end_x = int(round(float(car['x2'])))
+            pixel_end_y = int(round(float(car['y2'])))
             for ri in range(pixel_end_y-pixel_start_y+1):
                 for ci in range(pixel_end_x-pixel_start_x+1):
                     images[pixel_start_y+ri, pixel_start_x+ci, n] = 1
     return images
 
+def saveImages(images, name):
+    pickle.dump(images, open(name + ".pkl", "wb"))
 
 def main():
     cc = GetCoordinate('./label_2/')
-    images = np.zeros((500,500,7481))
+    images = np.zeros((512,1392,7481))
     new_images = createBoxes(images, cc)
+    saveImages(new_images, 'bbox_data')
     print(len(cc))
