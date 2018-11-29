@@ -53,10 +53,6 @@ def train(model, data, num_epochs, batch_size=32, lr=0.001, weight_decay=0.0, pr
     data = AutorallyDataset(length, data_dir, image_dim)
     data.save()
     dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 
     loss_fn = nn.MSELoss  # Can experiment with different ones
     optimizer = optim.Adam(params=model.parameters(),lr=lr, weight_decay=weight_decay)
