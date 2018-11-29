@@ -14,15 +14,15 @@ import pdb
 
 class AutorallyDataset(Dataset):
   'Characterizes a dataset for PyTorch'
-  def __init__(self, length):
+  def __init__(self, length, datadir):
       self.dataset = []
-      self.make_dataset(length)
-      self.GetCoordinate()
+      self.make_dataset(length, datadir)
+      self.GetCoordinate(datadir)
       self.createBoxes()
 
 
 
-  def make_dataset(self, length):
+  def make_dataset(self, length, datadir):
       self.dataset = []
       # try:
       #     with open('bbox_data.pkl', 'rb') as f:
@@ -31,7 +31,7 @@ class AutorallyDataset(Dataset):
       # except EOFError:
       #     print(os.path.getsize('bbox_data.pkl'))
 
-      cc = self.GetCoordinate()
+      cc = self.GetCoordinate(datadir)
       print(cc)
       images0 = np.zeros((7481, 512, 1392))
       images = self.createBoxes(images0, cc)
@@ -52,14 +52,15 @@ class AutorallyDataset(Dataset):
   def __getitem__(self, index):
        'Generates one sample of data'
        # Select sample
+
        return self.dataset[index]
 
   def save(self):
       pickle.dump(self, open(self.name + ".pkl", "wb"))
 
-  def GetCoordinate(self):
+  def GetCoordinate(self,datadir):
       coordinate = []
-      path = './label_2/' + '*.txt'
+      path = datadir + '*.txt'
       #path = './label_2' + '*.txt'
       files = glob.glob(path)
       for name in files:
@@ -76,7 +77,6 @@ class AutorallyDataset(Dataset):
                           dic['y2'] = l_s[7]
                           cars.append(dic)
               coordinate.append(cars)
-              print(coordinate)
 
           except IOError as exc:
               if exc.errno != errno.EISDIR:
@@ -98,14 +98,15 @@ class AutorallyDataset(Dataset):
               pixel_end_y = int(round(float(car['y2'])))
               for ri in range(pixel_end_y - pixel_start_y + 1):
                   for ci in range(pixel_end_x - pixel_start_x + 1):
-                      images[pixel_start_y + ri, pixel_start_x + ci, n] = 1
+                      images[n, pixel_start_y + ri, pixel_start_x + ci] = 1
       return images
 
 
 def main():
-    dataset = AutorallyDataset()
-    getdata = dataset.GetCoordinate()
-    getdata.save()
+    length = 10
+    data_dir = './label_2/'
+    dataset = AutorallyDataset(length, data_dir)
+    dataset.save()
 
 
 main()
