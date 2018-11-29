@@ -48,9 +48,9 @@ class LSTM(nn.Module):
 
 def train(model, data, num_epochs, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
     length = 10
-    data_dir = './label_2/'
-    image_dim = (512, 1392)
-    data = AutorallyDataset(length, data_dir, image_dim)
+    with open('bbox_data.pkl', 'rb') as f:
+        datainput = pickle.load(f)
+    data = AutorallyDataset(length, datainput)
     data.save()
     dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
 

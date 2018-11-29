@@ -113,12 +113,11 @@ class AutorallyDataset(Dataset):
 
 def main():
     length = 10
-    data_dir = './label_2/'
-    image_dim = (512, 1392)
-    name = 'data_is_done'
     with open('bbox_data.pkl', 'rb') as f:
         datainput = pickle.load(f)
     dataset = AutorallyDataset(length,datainput)
     dataset.save()
+    batch_size = 32
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 main()
