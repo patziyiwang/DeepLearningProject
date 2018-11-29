@@ -56,7 +56,7 @@ def getScaling(dim):
 def saveImages(images, name):
     pickle.dump(images, open(name + ".pkl", "wb"))
 
-if __name__ == "main":
+def main():
     cc = GetCoordinate('./label_2/')
     image_dim = (512, 1392)
     image_dim, scaling = getScaling(image_dim)
@@ -66,3 +66,5 @@ if __name__ == "main":
     images = np.zeros((7481,image_dim[0],image_dim[1]))
     new_images = createBoxes(images, cc, scaling)
     saveImages(new_images, 'bbox_data')
+
+main()
