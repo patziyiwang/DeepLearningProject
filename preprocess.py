@@ -60,9 +60,6 @@ def main():
     cc = GetCoordinate('./label_2/')
     image_dim = (512, 1392)
     image_dim, scaling = getScaling(image_dim)
-    print(image_dim)
-    import pdb
-    pdb.set_trace()
     images = np.zeros((7481,image_dim[0],image_dim[1]))
     new_images = createBoxes(images, cc, scaling)
     saveImages(new_images, 'bbox_data')
