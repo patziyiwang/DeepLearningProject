@@ -1,8 +1,8 @@
-import numpy as np
 import errno
 import glob
 import numpy as np
 import pickle
+import pdb
 
 def GetCoordinate(data_dir):
     coordinate = []
@@ -33,6 +33,8 @@ def createBoxes(images, coordinates):
     seq_length = len(coordinates)
     for n in range(seq_length):
         frame = coordinates[n]
+        if (n % 100 == 0):
+            print("Processing the " + str(n) + "th image\n")
         for i in range(len(frame)):
             car = frame[i]
             pixel_start_x = int(round(float(car['x1'])))
@@ -52,4 +54,7 @@ def main():
     images = np.zeros((512,1392,7481))
     new_images = createBoxes(images, cc)
     saveImages(new_images, 'bbox_data')
+    pdb.set_trace()
     print(len(cc))
+
+main()
