@@ -49,9 +49,14 @@ class LSTM(nn.Module):
 def train(model, data, num_epochs, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
     length = 10
     data_dir = './label_2/'
-    data = AutorallyDataset(length, data_dir)
+    image_dim = (512, 1392)
+    data = AutorallyDataset(length, data_dir, image_dim)
     data.save()
     dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
     loss_fn = nn.MSELoss  # Can experiment with different ones
     optimizer = optim.Adam(params=model.parameters(),lr=lr, weight_decay=weight_decay)
