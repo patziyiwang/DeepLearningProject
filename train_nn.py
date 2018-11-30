@@ -6,23 +6,24 @@ import torch.optim as optim
 from get_batch import AutorallyDataset
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
+import pdb
 
-dtype = torch.DoubleTensor
+dtype = torch.cuda.DoubleTensor
 
 class LSTM(nn.Module):
 
 
     def __init__(self, input_dim, enc_dim, hidden_dim, batch_size, output_dim=1, num_layers=1, h0=None, c0=None):
         super(LSTM, self).__init__()
-        self.input_dim = input_dim[0]*input_dim[1] #n_row*n_col
+        self.input_dim = input_dim #n_row*n_col
         self.enc_dim = enc_dim
         self.hidden_dim = hidden_dim
         self.batch_size = batch_size
         self.output_dim = output_dim
         self.num_layers = num_layers
 
-        self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.num_layers)
         self.encoder = nn.Linear(self.input_dim, self.enc_dim)
+        self.lstm = nn.LSTM(self.enc_dim, self.hidden_dim, self.num_layers)
         self.decoder = nn.Linear(self.hidden_dim, self.output_dim)
 
         #Initialize hidden states, default is zero
@@ -49,8 +50,9 @@ def train(model, data, n_epochs, input_size, seq_length=10, batch_size=32, lr=0.
 
     model.train()
 
-    dataset = AutorallyDataset(seq_length, data)
-    dataset.save("testDataset")
+    # dataset = AutorallyDataset(seq_length, data)
+    # dataset.save("testDataset")
+    dataset = pickle.load(open("testDataset.pkl","r"))
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     loss_fn = nn.MSELoss  # Can experiment with different ones
@@ -58,7 +60,7 @@ def train(model, data, n_epochs, input_size, seq_length=10, batch_size=32, lr=0.
 
     for epoch in range(n_epochs):
         loss_total = 0
-        pdb.set_trace()
+        # pdb.set_trace()
         for batch_idx, batch in enumerate(dataloader):
             input_seq = Variable(batch["input"].view(seq_length, batch_size, -1))
             output_seq = Variable(batch["output"].view(seq_length, batch_size, -1))
@@ -87,9 +89,6 @@ def load_model(model_path, file_name):
 
 
 if __name__ == "__main__":
-
-    import pdb
-
     #Import data
     data_path = ""
     data_file_name = "bbox_data"
@@ -100,10 +99,10 @@ if __name__ == "__main__":
     model_name = "test"
 
     #Input&Network parameters
-    input_size = data[0].shape
+    input_size = data[0].shape[0]*data[0].shape[1]
     encoder_size = 256
     hidden_size = 64
-    output_size = input_size[0]*input_size[1]
+    output_size = input_size
 
     #Tunable parameters
     batch = 64
@@ -115,6 +114,7 @@ if __name__ == "__main__":
 
     #Create LSTM model
     model = LSTM(input_size, encoder_size, hidden_size, batch, output_dim=output_size, num_layers=n_layers)
+    model.double()
 
     #Check if cuda is available
     if torch.cuda.is_available():
