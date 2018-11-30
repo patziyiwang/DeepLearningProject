@@ -5,10 +5,12 @@ import torch.nn as nn
 import torch.optim as optim
 from get_batch import AutorallyDataset
 from torch.utils.data import DataLoader
+from torch.autograd import Variable
 
 dtype = torch.DoubleTensor
 
 class LSTM(nn.Module):
+
 
     def __init__(self, input_dim, enc_dim, hidden_dim, batch_size, output_dim=1, num_layers=1, h0=None, c0=None):
         super(LSTM, self).__init__()
@@ -43,8 +45,10 @@ class LSTM(nn.Module):
         return y_pred
 
 
-
 def train(model, data, n_epochs, input_size, seq_length=10, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
+
+    model.train()
+
     dataset = AutorallyDataset(seq_length, data)
     dataset.save("testDataset")
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
@@ -52,18 +56,17 @@ def train(model, data, n_epochs, input_size, seq_length=10, batch_size=32, lr=0.
     loss_fn = nn.MSELoss  # Can experiment with different ones
     optimizer = optim.Adam(params=model.parameters(),lr=lr, weight_decay=weight_decay)
 
-    X = dtype(np.zeros((seq_length, batch_size, input_size)))
-    Y = dtype(np.zeros((seq_length, batch_size, input_size)))
-
-    pdb.set_trace()
-
     for epoch in range(n_epochs):
         loss_total = 0
+        pdb.set_trace()
         for batch_idx, batch in enumerate(dataloader):
-            X = batch["input"].view(seq_length, batch_size, -1)
-            Y = batch["output"].view(seq_length, batch_size, -1)
+            input_seq = Variable(batch["input"].view(seq_length, batch_size, -1))
+            output_seq = Variable(batch["output"].view(seq_length, batch_size, -1))
+            if torch.cuda.is_available():
+                input_seq = input_seq.cuda()
+                output_seq = output_seq.cuda()
             optimizer.zero_grad()
-            loss = loss_fn(model(X), Y)
+            loss = loss_fn(model(input_seq), output_seq)
             loss_total += loss.data
             loss.backward()
             optimizer.step()
