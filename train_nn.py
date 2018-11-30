@@ -6,8 +6,7 @@ import torch.optim as optim
 from get_batch import AutorallyDataset
 from torch.utils.data import DataLoader
 
-dtype = torch.Tensor
-
+dtype = torch.DoubleTensor
 
 class LSTM(nn.Module):
 

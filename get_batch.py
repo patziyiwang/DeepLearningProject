@@ -34,13 +34,24 @@ class AutorallyDataset(Dataset):
       print("Creating dataset\n")
       images = datainput
       num = images.shape[0]
-      #pdb.set_trace()
-      for i in range(num-length-2):
-          for j in range(0,length-1,2):
-              X = np.stack((images[i+j,:,:], images[i+j+1,:,:]), axis=0)
-              #pdb.set_trace()
-              Y = np.stack((images[i+j+1,:,:], images[i+j+2,:,:]), axis=0)
-          self. dataset.append({"input": X, "output": Y})
+      for i in range(num - length - 2):
+          X = []
+          Y = []
+          for j in range(0, length - 1, 2):
+              X.append(np.stack((images[i, :, :], images[i + j + 1, :, :]), axis=0))
+              Y.append(np.stack((images[i + 1, :, :], images[i + j + 2, :, :]), axis=0))
+          X = np.asarray(X)
+          Y = np.asarray(Y)
+          Xreal = np.zeros((length, X.shape[2], X.shape[3]))
+          Yreal = np.zeros((length, X.shape[2], X.shape[3]))
+          for k in range(X.shape[0]):
+              m = k * 2
+              Xreal[m, :, :] = X[k, 1, :, :]
+              Xreal[m + 1, :, :] = X[k, 1, :, :]
+              Yreal[m, :, :] = X[k, 1, :, :]
+              Yreal[m + 1, :, :] = X[k, 1, :, :]
+
+          self.dataset.append({"input": Xreal, "output": Yreal})
       return self.dataset
 
   def __len__(self):
