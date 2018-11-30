@@ -3,9 +3,8 @@ import torch
 import pickle
 import torch.nn as nn
 import torch.optim as optim
-import get_batch.py
 from get_batch import AutorallyDataset
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 
 dtype = torch.Tensor
 
@@ -37,7 +36,7 @@ class LSTM(nn.Module):
     #Forward pass
     def forward(self, input):
         #Input to encoder has shape (seq_length, batch_size, n_row*n_col)
-        enc_input = self.encoder(input.view(input.shape[0], self.batch_size, -1))
+        enc_input = self.encoder(input)
         #LSTM output has shape(seq_length, batch_size, hidden_dim)
         lstm_out, self.hidden = self.lstm(enc_input, (self.h0, self.c0))
         #Decoder output has shape (seq_length, batch_size, output_dim)
@@ -46,13 +45,10 @@ class LSTM(nn.Module):
 
 
 
-def train(model, data, num_epochs, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
-    length = 10
-    with open('bbox_data.pkl', 'rb') as f:
-        datainput = pickle.load(f)
-    data = AutorallyDataset(length, datainput)
-    data.save()
-    dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
+def train(model, data, n_epochs, input_size, seq_length=10, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
+    dataset = AutorallyDataset(seq_length, data)
+    dataset.save("testDataset")
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     loss_fn = nn.MSELoss  # Can experiment with different ones
     optimizer = optim.Adam(params=model.parameters(),lr=lr, weight_decay=weight_decay)
@@ -60,11 +56,13 @@ def train(model, data, num_epochs, batch_size=32, lr=0.001, weight_decay=0.0, pr
     X = dtype(np.zeros((seq_length, batch_size, input_size)))
     Y = dtype(np.zeros((seq_length, batch_size, input_size)))
 
+    pdb.set_trace()
+
     for epoch in range(n_epochs):
         loss_total = 0
         for batch_idx, batch in enumerate(dataloader):
-            X = batch["input"]
-            Y = batch["output"]
+            X = batch["input"].view(seq_length, batch_size, -1)
+            Y = batch["output"].view(seq_length, batch_size, -1)
             optimizer.zero_grad()
             loss = loss_fn(model(X), Y)
             loss_total += loss.data
@@ -88,17 +86,19 @@ def load_model(model_path, file_name):
 
 if __name__ == "__main__":
 
+    import pdb
+
     #Import data
     data_path = ""
-    data_file_name = ""
+    data_file_name = "bbox_data"
     data = loadData(data_path, data_file_name)
 
     #Model save path and name information
     model_save_path = ""
-    model_name = ""
+    model_name = "test"
 
     #Input&Network parameters
-    input_size = (512,1392)
+    input_size = data[0].shape
     encoder_size = 256
     hidden_size = 64
     output_size = input_size[0]*input_size[1]
@@ -118,5 +118,5 @@ if __name__ == "__main__":
     if torch.cuda.is_available():
         model.cuda()
 
-    train(model, data, n_epochs, batch_size=batch, lr=learning_rate, weight_decay=weight_decay)
+    train(model, data, n_epochs, input_size=output_size, seq_length=seq_length, batch_size=batch, lr=learning_rate, weight_decay=weight_decay)
     save_model(model_save_path, model_name, model)

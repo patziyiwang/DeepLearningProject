@@ -1,4 +1,3 @@
-
 from torch.utils.data import Dataset, DataLoader
 import pickle
 import errno
@@ -17,9 +16,6 @@ class AutorallyDataset(Dataset):
   def __init__(self, length, datainput):
       self.dataset = []
       self.make_dataset(length,datainput)
-      self.save()
-
-
 
   def make_dataset(self, length, datainput):
       self.dataset = []
@@ -35,6 +31,7 @@ class AutorallyDataset(Dataset):
       # a = int(image_dim[0])
       # b = int(image_dim[1])
       # images0 = np.zeros((7481, a,b))
+      print("Creating dataset\n")
       images = datainput
       num = images.shape[0]
       #pdb.set_trace()
@@ -43,7 +40,7 @@ class AutorallyDataset(Dataset):
               X = np.stack((images[i+j,:,:], images[i+j+1,:,:]), axis=0)
               #pdb.set_trace()
               Y = np.stack((images[i+j+1,:,:], images[i+j+2,:,:]), axis=0)
-          self. dataset.append({"X": X, "Y": Y})
+          self. dataset.append({"input": X, "output": Y})
       return self.dataset
 
   def __len__(self):
@@ -56,8 +53,8 @@ class AutorallyDataset(Dataset):
 
        return self.dataset[index]
 
-  def save(self):
-      pickle.dump(self, open("datahere" + ".pkl", "wb"))
+  def save(self, data_name):
+      pickle.dump(self, open(data_name + ".pkl", "wb"))
 
   # def GetCoordinate(self,datadir):
   #     coordinate = []
@@ -116,8 +113,19 @@ def main():
     with open('bbox_data.pkl', 'rb') as f:
         datainput = pickle.load(f)
     dataset = AutorallyDataset(length,datainput)
-    dataset.save()
+    dataset.save("testDataset")
     batch_size = 32
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    import pdb
+    pdb.set_trace()
 
-main()
+def test():
+    with open('bbox_data.pkl', 'rb') as f:
+        datainput = pickle.load(f)
+    with open('datahere.pkl', 'rb') as f:
+        dataset = pickle.load(f)
+    batch_size = 32
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    for batch_idx, batch in enumerate(dataloader):
+        import pdb
+        pdb.set_trace()
