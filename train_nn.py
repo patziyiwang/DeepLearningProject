@@ -13,17 +13,17 @@ dtype = torch.cuda.DoubleTensor
 class LSTM(nn.Module):
 
 
-    def __init__(self, input_dim, enc_dim, hidden_dim, batch_size, output_dim=1, num_layers=1, h0=None, c0=None):
+    def __init__(self, input_dim, hidden_dim, batch_size, output_dim=1, num_layers=1, h0=None, c0=None):
         super(LSTM, self).__init__()
         self.input_dim = input_dim #n_row*n_col
-        self.enc_dim = enc_dim
+        # self.enc_dim = enc_dim
         self.hidden_dim = hidden_dim
         self.batch_size = batch_size
         self.output_dim = output_dim
         self.num_layers = num_layers
 
-        self.encoder = nn.Linear(self.input_dim, self.enc_dim)
-        self.lstm = nn.LSTM(self.enc_dim, self.hidden_dim, self.num_layers)
+        # self.encoder = nn.Linear(self.input_dim, self.enc_dim)
+        self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.num_layers)
         self.decoder = nn.Linear(self.hidden_dim, self.output_dim)
 
         #Initialize hidden states, default is zero
@@ -33,14 +33,17 @@ class LSTM(nn.Module):
         else:
             self.h0 = h0
             self.c0 = c0
+        if torch.cuda.is_available():
+            self.h0 = self.h0.cuda()
+            self.c0 = self.c0.cuda()
 
 
     #Forward pass
     def forward(self, input):
         #Input to encoder has shape (seq_length, batch_size, n_row*n_col)
-        enc_input = self.encoder(input)
+        # enc_input = self.encoder(input)
         #LSTM output has shape(seq_length, batch_size, hidden_dim)
-        lstm_out, self.hidden = self.lstm(enc_input, (self.h0, self.c0))
+        lstm_out, self.hidden = self.lstm(input, (self.h0, self.c0))
         #Decoder output has shape (seq_length, batch_size, output_dim)
         y_pred = self.decoder(lstm_out)
         return y_pred
@@ -55,12 +58,12 @@ def train(model, data, n_epochs, input_size, seq_length=10, batch_size=32, lr=0.
     dataset = pickle.load(open("testDataset.pkl","r"))
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    loss_fn = nn.MSELoss  # Can experiment with different ones
+    loss_fn = nn.MSELoss()  # Can experiment with different ones
     optimizer = optim.Adam(params=model.parameters(),lr=lr, weight_decay=weight_decay)
 
     for epoch in range(n_epochs):
         loss_total = 0
-        # pdb.set_trace()
+        pdb.set_trace()
         for batch_idx, batch in enumerate(dataloader):
             input_seq = Variable(batch["input"].view(seq_length, batch_size, -1))
             output_seq = Variable(batch["output"].view(seq_length, batch_size, -1))
@@ -100,7 +103,7 @@ if __name__ == "__main__":
 
     #Input&Network parameters
     input_size = data[0].shape[0]*data[0].shape[1]
-    encoder_size = 256
+    # encoder_size = 256
     hidden_size = 64
     output_size = input_size
 
@@ -113,7 +116,7 @@ if __name__ == "__main__":
     seq_length = 10
 
     #Create LSTM model
-    model = LSTM(input_size, encoder_size, hidden_size, batch, output_dim=output_size, num_layers=n_layers)
+    model = LSTM(input_size, hidden_size, batch, output_dim=output_size, num_layers=n_layers)
     model.double()
 
     #Check if cuda is available
