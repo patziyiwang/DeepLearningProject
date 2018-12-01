@@ -58,13 +58,16 @@ def train_batch(model, data, n_epochs, input_size, seq_length=10, batch_size=32,
     dataset = pickle.load(open("testDataset.pkl","r"))
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
+    end_idx = len(dataset)/batch_size
+
     loss_fn = nn.MSELoss()  # Can experiment with different ones
     optimizer = optim.Adam(params=model.parameters(),lr=lr, weight_decay=weight_decay)
 
     for epoch in range(n_epochs):
         loss_total = 0
-        pdb.set_trace()
         for batch_idx, batch in enumerate(dataloader):
+            if batch_idx == end_idx:
+                break
             input_seq = Variable(batch["input"].view(seq_length, batch_size, -1))
             output_seq = Variable(batch["output"].view(seq_length, batch_size, -1))
             if torch.cuda.is_available():
@@ -116,9 +119,9 @@ if __name__ == "__main__":
 
     #Tunable parameters
     batch = 32
-    n_layers = 2
+    n_layers = 1
     n_epochs = 100
-    learning_rate = 0.001
+    learning_rate = 0.00001
     weight_decay = 0.0
     seq_length = 10
 
