@@ -49,7 +49,7 @@ class LSTM(nn.Module):
         return y_pred
 
 
-def train_batch(model, data, n_epochs, input_size, seq_length=10, batch_size=32, lr=0.001, weight_decay=0.0, print_every=5):
+def train_batch(model, data, n_epochs, input_size, seq_length=10, batch_size=32, lr=0.001, weight_decay=0.0, print_every=1):
 
     model.train()
 
@@ -72,17 +72,18 @@ def train_batch(model, data, n_epochs, input_size, seq_length=10, batch_size=32,
                 output_seq = output_seq.cuda()
             optimizer.zero_grad()
             loss = loss_fn(model(input_seq), output_seq)
-            loss_total += loss.data
+            loss_total += loss.detach().item()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
             optimizer.step()
         if (epoch % print_every == 0):
             print("Training epoch: " + str(epoch) + "/" + str(n_epochs) + ", loss: " + str(loss_total))
 
 
-def train_recurrent():
+# def train_recurrent():
 
 
-def eval(model, ):
+# def eval(model):
 
 
 def loadData(data_path, file_name):
@@ -114,10 +115,10 @@ if __name__ == "__main__":
     output_size = input_size
 
     #Tunable parameters
-    batch = 64
+    batch = 32
     n_layers = 2
     n_epochs = 100
-    learning_rate = 0.0005
+    learning_rate = 0.001
     weight_decay = 0.0
     seq_length = 10
 
