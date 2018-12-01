@@ -83,7 +83,7 @@ def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32
             print("Training epoch: " + str(epoch) + "/" + str(n_epochs) + ", loss: " + str(loss_total))
 
 
-def eval(model, dataset, seen_step, fut_step, batch_size=32):
+def model_eval(model, dataset, seen_step, fut_step, batch_size=32):
 
     model.eval()
 
@@ -124,13 +124,13 @@ def load_model(model_path, file_name):
 if __name__ == "__main__":
     #Tunable network&training parameters
     hidden_size = 16
-    dropout = 0
-    batch = 32
-    n_layers = 1
+    dropout = 0.5
+    batch = 64
+    n_layers = 2
     n_epochs = 100
-    learning_rate = 1*10**-5
-    weight_decay = 0.0
-    grad_clip = 1
+    learning_rate = 1*10**-6
+    weight_decay = 0.001
+    grad_clip = 0.5
 
     #True if training recurrently(Given seen_step predict fut_step)
     recurrent = True
