@@ -71,13 +71,14 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
 <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
 <ul>
   <li><b>Tracking</b></li>
+  We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed. 
   <li><b>Dynamics prediction</b></li>
 </ul>
 
 <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
 <ul>
   <li><b>Tracking</b></li>
-  We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed. We then turn our focus to study more recent development of object tracking with deep learning techniques. We found ECO(Efficient Convolution Operators for Tracking) out ferformed all the trackers we had tried previously and satisfied our requirement for box tracking so that we can previde a stable tracker for our next steps of dynamics prediciton.
+  We turn our focus to study more recent development of object tracking with deep learning techniques anticipating more statble object box tracking. We found ECO(Efficient Convolution Operators for Tracking) out ferformed all the trackers we had tried previously and satisfied our requirement for box tracking so that we can previde a stable tracker for our next steps of dynamics prediciton.
 
   <li><b>Dynamics prediction</b></li>
 </ul>
