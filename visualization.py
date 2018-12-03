@@ -8,3 +8,11 @@ def visualize(image, name):
     imgplot = ax.imshow(image, cmap=mpl.cm.Greys)
     imgplot.set_interpolation('nearest')
     plt.savefig(name + ".png")
+
+def plot_loss(loss_history, file_name):
+    plt.figure()
+    plt.plot(range(len(loss_history)), loss_history)
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.savefig(file_name + ".png")
+    plt.clf()

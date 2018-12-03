@@ -21,6 +21,8 @@ def train_batch(model, dataset, n_epochs, seq_length=10, batch_size=32, lr=0.000
     loss_fn = nn.MSELoss()
     optimizer = optim.Adam(params=model.parameters(),lr=lr, weight_decay=weight_decay)
 
+    loss_history = []
+
     for epoch in range(n_epochs):
         loss_total = 0
         for batch_idx, batch in enumerate(dataloader):
@@ -41,9 +43,12 @@ def train_batch(model, dataset, n_epochs, seq_length=10, batch_size=32, lr=0.000
             optimizer.step()
         if (epoch % print_every == 0):
             print("Training epoch: " + str(epoch) + "/" + str(n_epochs) + ", loss: " + str(loss_total))
+        loss_history.append(loss_total)
+
+    return loss_history
 
 
-def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32, lr=0.00011, weight_decay=0.0, grad_clip=0, print_every=5):
+def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32, lr=0.0001, weight_decay=0.0, grad_clip=0, print_every=5):
 
     model.train()
 
@@ -52,7 +57,9 @@ def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32
     end_idx = len(dataset)/batch_size
 
     loss_fn = nn.MSELoss()
-    optimizer = optim.Adam(params=model.parameters(), lr=lr, weight_decay=weight_decay)
+    optimizer = optim.RMSprop(params=model.parameters(), lr=lr, weight_decay=weight_decay)
+
+    loss_history = []
 
     for epoch in range(n_epochs):
         loss_total = 0
@@ -96,6 +103,8 @@ def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32
             optimizer.step()
         if (epoch % print_every == 0):
             print("Training epoch: " + str(epoch) + "/" + str(n_epochs) + ", loss: " + str(loss_total))
+        loss_history.append(loss_total)
+    return loss_history
 
 
 def model_eval(model, dataset, seen_step, fut_step, batch_size=32):
@@ -146,14 +155,14 @@ def load_model(model_path, file_name):
 
 if __name__ == "__main__":
     #Tunable network&training parameters
-    hidden_size = 16
+    hidden_size = 16 #Cannot be more than 16 or get nan
     dropout = 0 #Applies to every layer but the last layer
-    batch = 64
-    n_layers = 1
+    batch = 64 #Cannot be more than 64
+    n_layers = 2 #Cannot be more than 1 or get cudnn error
     n_epochs = 100
-    learning_rate = 5*10**-5
+    learning_rate = 1*10**-4
     weight_decay = 0.001 #Regularization
-    grad_clip = 10
+    grad_clip = 25
 
     #True if training recurrently(Given seen_step predict fut_step)
     recurrent = True
@@ -190,8 +199,9 @@ if __name__ == "__main__":
     print("Model built\n")
 
     if recurrent:
-        train_recurrent(model, dataset, n_epochs, seen_step=seen_step, fut_step=fut_step, batch_size=batch, lr=learning_rate, weight_decay=weight_decay, grad_clip=grad_clip)
+        loss_history = train_recurrent(model, dataset, n_epochs, seen_step=seen_step, fut_step=fut_step, batch_size=batch, lr=learning_rate, weight_decay=weight_decay, grad_clip=grad_clip)
     else:
-        train_batch(model, dataset, n_epochs, seq_length=seq_length, batch_size=batch, lr=learning_rate, weight_decay=weight_decay, grad_clip=grad_clip)
+        loss_history = train_batch(model, dataset, n_epochs, seq_length=seq_length, batch_size=batch, lr=learning_rate, weight_decay=weight_decay, grad_clip=grad_clip)
 
     save_model(model_save_path, model_name, model)
+    pickle.dump(loss_history, "loss_" + model_name + ".pkl")
