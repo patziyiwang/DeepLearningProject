@@ -16,6 +16,7 @@ def GetCoordinate(data_dir):
                     dic = {}
                     #Loads the box dimensions from file
                     if l_s[0] == 'Car':
+                        # (x1,y1) is the bottom left point, (x2,y2) is the top right point
                         dic['x1'] = l_s[4]
                         dic['y1'] = l_s[5]
                         dic['x2'] = l_s[6]
@@ -30,8 +31,8 @@ def GetCoordinate(data_dir):
     return coordinate
 
 def createBoxes(images, coordinates, scaling):
-    seq_length = len(coordinates)
-    for n in range(seq_length):
+    data_length = len(coordinates)
+    for n in range(data_length):
         if (n % 100 == 0):
             print("Processing the " + str(n) + "th image\n")
         frame = coordinates[n]
