@@ -124,12 +124,12 @@ def load_model(model_path, file_name):
 if __name__ == "__main__":
     #Tunable network&training parameters
     hidden_size = 16
-    dropout = 0.5
+    dropout = 0.5 #Applies to every layer but the last layer
     batch = 64
     n_layers = 2
     n_epochs = 100
     learning_rate = 1*10**-6
-    weight_decay = 0.001
+    weight_decay = 0.001 #Regularization
     grad_clip = 0.5
 
     #True if training recurrently(Given seen_step predict fut_step)
@@ -143,14 +143,14 @@ if __name__ == "__main__":
     data_file_name = "bbox_data"
     data = loadData(data_path, data_file_name)
 
-    #Create/Load dataset from data
+    #Create/Load dataset from data. Dataset contains sequences of data of length seq_length
     # dataset = AutorallyDataset(seq_length, data)
     # dataset.save("testDataset")
     dataset = pickle.load(open("testDataset.pkl", "r"))
     print("Data loaded successfully\n")
 
     #Data dimensions
-    input_size = data[0].shape[0]*data[0].shape[1]
+    input_size = data[0].shape[0]*data[0].shape[1] #n_row*n_col
     output_size = input_size
 
     #Model save path and name information

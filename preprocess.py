@@ -14,6 +14,7 @@ def GetCoordinate(data_dir):
                 for i, t in enumerate(f.readlines(), 1):
                     l_s = t.split()
                     dic = {}
+                    #Loads the box dimensions from file
                     if l_s[0] == 'Car':
                         dic['x1'] = l_s[4]
                         dic['y1'] = l_s[5]
@@ -35,6 +36,7 @@ def createBoxes(images, coordinates, scaling):
             print("Processing the " + str(n) + "th image\n")
         frame = coordinates[n]
         for i in range(len(frame)):
+            #Create a map of zeros and ones inside the box
             car = frame[i]
             pixel_start_x = int(round(float(car['x1'])/scaling))
             pixel_start_y = int(round(float(car['y1'])/scaling))
@@ -48,6 +50,7 @@ def createBoxes(images, coordinates, scaling):
 
 def getScaling(dim):
     scaling = 1
+    #Shrinks the image down by a factor of 2 until dimension<32 or odd
     while (dim[0]%2 == 0 and dim[1]%2 == 0 and min(dim)>32):
         dim = (dim[0]/2, dim[1]/2)
         scaling *= 2
