@@ -63,7 +63,7 @@ if __name__ == "__main__":
     cc = GetCoordinate('./label_2/')
     image_dim = (512, 1392)
     image_dim, scaling = getScaling(image_dim)
-    print(image_dim)
+    print("The image dimension after shrinking is " + str(image_dim) + "\n")
     a = int(image_dim[0])
     b = int(image_dim[1])
     images = np.zeros((7481,a,b))
