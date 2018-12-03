@@ -61,19 +61,34 @@ def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32
                 break
             input_seq = Variable(batch["input"].view(seq_length, batch_size, -1))
             output_seq = Variable(batch["output"].view(seq_length, batch_size, -1))
-            if torch.cuda.is_available():
-                input_seq = input_seq.cuda()
-                output_seq = output_seq.cuda()
+            # if torch.cuda.is_available():
+            #     input_seq = input_seq.cuda()
+            #     output_seq = output_seq.cuda()
             optimizer.zero_grad()
-            _, (h, c) = model(input_seq[0:seen_step])
-            empty_input = torch.zeros_like(input_seq[0:1])
-            fut_prediction = []
-            for t in range(fut_step):
-                prediction, (h, c) = model.step(empty_input, h, c)
-                fut_prediction.append(prediction)
-            pred_seq = torch.cat(fut_prediction, dim=0)
+
+            #Old Implementation
+            # _, (h, c) = model(input_seq[0:seen_step])
+            # empty_input = torch.zeros_like(input_seq[0:1])
+            # fut_prediction = []
+            # for t in range(fut_step):
+            #     prediction, (h, c) = model.step(empty_input, h, c)
+            #     fut_prediction.append(prediction)
+            # pred_seq = torch.cat(fut_prediction, dim=0)
+            # truth_seq = output_seq[seen_step:]
+            # loss = loss_fn(pred_seq, truth_seq)
+
+            #New Implementation
+            seen_seq = input_seq[0:seen_step]
+            fut_seq = torch.zeros_like(input_seq[seen_step:])
+            input_new = torch.cat([seen_seq, fut_seq], dim=0)
+            if torch.cuda.is_available():
+                input_new = input_new.cuda()
+                output_seq = output_seq.cuda()
+            prediction, _ = model(input_new)
+            pred_seq = prediction[seen_step:]
             truth_seq = output_seq[seen_step:]
             loss = loss_fn(pred_seq, truth_seq)
+
             loss_total += loss.detach().item()
             loss.backward()
             if grad_clip != 0:
@@ -91,6 +106,10 @@ def model_eval(model, dataset, seen_step, fut_step, batch_size=32):
 
     end_idx = len(dataset)/batch_size
 
+    loss_fn = nn.MSELoss()
+
+    loss_total = 0
+
     for batch_idx, batch in enumerate(dataloader):
         if batch_idx == end_idx:
             break
@@ -107,6 +126,10 @@ def model_eval(model, dataset, seen_step, fut_step, batch_size=32):
             fut_prediction.append(prediction)
         pred_seq = torch.cat(fut_prediction, dim=0)
         truth_seq = output_seq[seen_step:]
+        loss = loss_fn(pred_seq, truth_seq)
+        loss_total += loss.detach().item()
+
+    print("Total loss for test set: " + str(loss_total))
 
 
 def loadData(data_path, file_name):
@@ -124,13 +147,13 @@ def load_model(model_path, file_name):
 if __name__ == "__main__":
     #Tunable network&training parameters
     hidden_size = 16
-    dropout = 0.5 #Applies to every layer but the last layer
+    dropout = 0 #Applies to every layer but the last layer
     batch = 64
-    n_layers = 2
+    n_layers = 1
     n_epochs = 100
-    learning_rate = 1*10**-6
+    learning_rate = 5*10**-5
     weight_decay = 0.001 #Regularization
-    grad_clip = 0.5
+    grad_clip = 10
 
     #True if training recurrently(Given seen_step predict fut_step)
     recurrent = True
@@ -155,7 +178,7 @@ if __name__ == "__main__":
 
     #Model save path and name information
     model_save_path = ""
-    model_name = "test"
+    model_name = "test_recurrent"
 
     #Create LSTM model
     model = LSTM(input_size, hidden_size, batch, output_dim=output_size, num_layers=n_layers, dropout=dropout)

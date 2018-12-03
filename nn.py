@@ -41,6 +41,10 @@ class LSTM(nn.Module):
     def step(self, input, h, c):
         #Input to LSTM has shape (1, batch_size, n_row*n_col)
         #LSTM output has shape (1, batch_size, hidden_dim)
+        if torch.cuda.is_available():
+            h = h.cuda()
+            c = c.cuda()
+            input = input.cuda()
         lstm_out, self.hidden = self.lstm(input, (h, c))
         # Decoder output has shape (1, batch_size, output_dim)
         prediction = self.decoder(lstm_out)

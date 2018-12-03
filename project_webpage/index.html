@@ -30,8 +30,8 @@ color: #FF9900;
 <div class="page-header">
 
 <!-- Title and Name --> 
-<h1>Your Title Here</h1> 
-<span style="font-size: 20px; line-height: 1.5em;"><strong>Your Name(s) Here</strong></span><br>
+<h1>Obstacle Dynamics Prediction</h1> 
+<span style="font-size: 20px; line-height: 1.5em;"><strong>Ziyi Wang</strong></span><br>
 <span style="font-size: 18px; line-height: 1.5em;">Fall 2018 CS 4803 / 7643 Deep Learning: Class Project</span><br>
 <span style="font-size: 18px; line-height: 1.5em;">Georgia Tech</span>
 <hr>
@@ -42,11 +42,11 @@ This webpage template is based on a similar template from Dr. Devi Parikh's
 <!-- Goal -->
 <h2>Abstract</h2>
 
-One or two sentences on the motivation behind the problem you are solving. One or two sentences describing the approach you took. One or two sentences on the main result you obtained.
+The problem we try to tackle in this project is obstacle movement prediction, which is essential to research on autonomous driving with only visual information. We split the problem into two parts: first identify the obstacle by drawing a bounding box around it, then predict its movements by focusing on the bounding box dynamics instead of the whole image. One or two sentences on the main result you obtained.
 <br><br>
 <!-- figure -->
 <h2>Teaser figure</h2>
-A figure that conveys the main idea behind the project or the main application being addressed. (This one is from <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks">AlexNet</a>.)
+A flowchart like figure showing how we take an input image, draws a bounding box and predicts its movements. (This one is from <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks">AlexNet</a>.)
 <br><br>
 <!-- Main Illustrative Figure --> 
 <div style="text-align: center;">
@@ -56,6 +56,10 @@ A figure that conveys the main idea behind the project or the main application b
 <br><br>
 <!-- Introduction -->
 <h2>Introduction / Background / Motivation</h2>
+In this project, we work on predicting the movments of one or more obstacles captured in a video. This is an essential part of research on autonomous driving since most applications today require various sensors like LIDAR, stereo camera, GPS, etc, which are very expensive. The ability to predict obstacle movements in real time with only single/multiple cameras would greatly expedite the progress of visual based autonomous driving.
+<br>
+The current researh on autonomous driving focuses on the prediction of entire images. The limits with this approach are twofold: it is very difficult to predict very far into the future with high fidelity in real time, and it also wastes computation on prediction of the background, which might not be required in the path planning and control module.
+
 <h4>What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.</h4>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 
@@ -108,7 +112,7 @@ Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed 
 
   <hr>
   <footer> 
-  <p>© You Name(s) Here</p>
+  <p>© Ziyi Wang</p>
   </footer>
 </div>
 </div>
