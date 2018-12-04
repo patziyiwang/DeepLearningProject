@@ -68,17 +68,21 @@ def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32
                 break
             input_seq = Variable(batch["input"].view(seq_length, batch_size, -1))
             output_seq = Variable(batch["output"].view(seq_length, batch_size, -1))
-            # if torch.cuda.is_available():
-            #     input_seq = input_seq.cuda()
-            #     output_seq = output_seq.cuda()
             optimizer.zero_grad()
 
             #Old Implementation
-            # _, (h, c) = model(input_seq[0:seen_step])
-            # empty_input = torch.zeros_like(input_seq[0:1])
+            # if torch.cuda.is_available():
+            #     input_seq = input_seq.cuda()
+            #     output_seq = output_seq.cuda()
+            # seen_prediction, (h, c) = model(input_seq[0:seen_step])
+            # prediction = seen_prediction[-1:]
+            # # empty_input = torch.zeros_like(input_seq[0:1]) #Using a dummy input only
             # fut_prediction = []
             # for t in range(fut_step):
-            #     prediction, (h, c) = model.step(empty_input, h, c)
+            #     # h = torch.zeros_like(h)
+            #     # c = torch.zeros_like(c)
+            #     # prediction, (h, c) = model.step(empty_input, h, c)
+            #     prediction, (h, c) = model.step(prediction, h, c)
             #     fut_prediction.append(prediction)
             # pred_seq = torch.cat(fut_prediction, dim=0)
             # truth_seq = output_seq[seen_step:]
@@ -158,9 +162,9 @@ if __name__ == "__main__":
     hidden_size = 16 #Cannot be more than 16 or get nan
     dropout = 0 #Applies to every layer but the last layer
     batch = 64 #Cannot be more than 64
-    n_layers = 2 #Cannot be more than 1 or get cudnn error
+    n_layers = 1 #Cannot be more than 1 or get cudnn error
     n_epochs = 100
-    learning_rate = 1*10**-4
+    learning_rate = 1*10**-5
     weight_decay = 0.001 #Regularization
     grad_clip = 25
 
@@ -197,6 +201,10 @@ if __name__ == "__main__":
     if torch.cuda.is_available():
         model.cuda()
     print("Model built\n")
+
+    # nn.init.kaiming_uniform_(model.lstm.all_weights[0][0].data)
+    # nn.init.kaiming_uniform_(model.lstm.all_weights[0][1].data)
+    # nn.init.kaiming_uniform_(model.decoder.weight.data)
 
     if recurrent:
         loss_history = train_recurrent(model, dataset, n_epochs, seen_step=seen_step, fut_step=fut_step, batch_size=batch, lr=learning_rate, weight_decay=weight_decay, grad_clip=grad_clip)

@@ -18,8 +18,8 @@ class LSTM(nn.Module):
 
         #Initialize hidden states, default is zero
         if h0 is None:
-            self.h0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
-            self.c0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
+            self.h0 = torch.randn(self.num_layers, self.batch_size, self.hidden_dim) #torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
+            self.c0 = torch.randn(self.num_layers, self.batch_size, self.hidden_dim) #torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
         else:
             self.h0 = h0
             self.c0 = c0
