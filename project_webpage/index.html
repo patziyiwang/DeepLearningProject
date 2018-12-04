@@ -72,7 +72,7 @@ A flowchart like figure showing how we take an input image, draws a bounding box
 <!-- Approach -->
 <h2>Approach</h2>
 
-  We broke the problem into two parts: obstacle detection/tracking and obstacle dynamics prediction. For the tracking part we turned to existing obstacle detection algorithms since there are plenty of existing work in this field.
+  We broke the problem into two parts: obstacle detection/tracking and obstacle dynamics prediction. The tracking part takes in an input image stream and outputs the bounding box information on one or more objects. For this part we turned to existing obstacle detection algorithms since it is a rather established field and there are many existing algorithms that achieve good performance on our objective. The bounding box information is used by the obstacle dynamics prediction part to create a mask, which is then fed into the network for prediction of future masks. For prediction we used a custom encoder-decoder LSTM network structure, while drawing inspirations from existing work on training.
   <h3>Tracking</h3>
   <ul>
   <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
@@ -86,7 +86,12 @@ A flowchart like figure showing how we take an input image, draws a bounding box
   <h3>Obstacle Dynamics Prediction</h3>
 <ul>
   <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
-  Obstacle prediction
+  For obstacle dynamics prediction, we first took the bounding box information in each image/frame and created a mask the same size of the image with zeros everywhere except for inside the bounding boxes, where the value is set to 1. The masks were first shrunken by factors of 2 until a dimension size becomes odd or below 32. All the masks were then used to build a dataset of sequences. The sequence length is a hyperparameter and also a performance indicator. Each mask was flattened before fed into the network.
+  <br>
+  The network structure we used is a LSTM, since we are trying to predict the temporal evolution of the masks. The network takes in the flattened masks and outputs a mask of the same size at the next frame. The hyperparameters related to the network are hidden state dimensions, number of LSTM layers and dropout probability. For training, we used three different techniques. The first technique is Teacher Forcing, where we always use the true mask as the input to the network. The other two approaches we took utilize an encoder-decoder framework, where we provide the network with true masks for a certain number of frames and then use the last hidden state which contains the encoded information to predict another number of frames. For prediction, we tried using both the predicted mask as input to the next step and using only a dummy input of zeros, in which case only the hidden state information is used for prediction. In this case we introduced one more hyperparameter in the fraction of the sequence used for prediction.
+  <br>
+
+
   <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
   Exploding gradient
 </ul>
