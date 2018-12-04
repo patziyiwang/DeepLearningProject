@@ -61,10 +61,10 @@ A flowchart like figure showing how we take an input image, draws a bounding box
   The current researh on autonomous driving focuses on the prediction of entire images. The limits with this approach are twofold: it is very difficult to predict very far into the future with high fidelity in real time, and it also wastes computation on prediction of the background, which might not be required in the path planning and control module.
 
 <h4>What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.</h4>
-  In this project, we work on predicting the movments of one or more obstacles captured in a video. We try to do so by first applying an object detector/tracker which draws bounding boxes around obstacles of interest. We then predict the movements and shrinking/expanding of the bounding boxes, which reflect the dynamics of the obstacles.
+  In this project, we work on predicting the movments of one or more obstacles captured in a video. We try to do so by first applying an object detector/tracker which draws bounding boxes around obstacles of interest. We then predict the movements and shrinking/expanding of the bounding boxes, which reflect the dynamics of the obstacles. In the proeject we tackle this problem in the context of autonomous driving, where we use videos taken by a car-mounted camera and try to predict movements of other cars in the video.
 
 <h4>How is it done today, and what are the limits of current practice?</h4>
-  Most of the current research and application on obstacle avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc., which are very expensive and require an algorithm that makes sense of all the sensor information. In the field of video prediction, there are many efforts on predicting entire images...
+  Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc., which are very expensive and require an algorithm to make sense of and fuse all the sensor information. In the field of video prediction, there are many efforts on predicting entire images...
 
 <h4>Who cares? If you are successful, what difference will it make?</h4>
   The success of this project is very significant for...
