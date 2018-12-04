@@ -62,7 +62,7 @@ def saveImages(images, name):
     pickle.dump(images, open(name + ".pkl", "wb"))
 
 if __name__ == "__main__":
-    cc = GetCoordinate('./Car1/')
+    cc = GetCoordinate('./Car/')
     image_dim = (240, 320)
     image_dim, scaling = getScaling(image_dim)
     print("The image dimension after shrinking is " + str(image_dim) + "\n")
