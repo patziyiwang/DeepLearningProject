@@ -31,7 +31,7 @@ color: #FF9900;
 
 <!-- Title and Name -->
 <h1>Obstacle Dynamics Prediction</h1>
-<span style="font-size: 20px; line-height: 1.5em;"><strong>Ziyi Wang</strong></span><br>
+<span style="font-size: 20px; line-height: 1.5em;"><strong>Ziyi Wang, Zhanzhan Zhao</strong></span><br> 
 <span style="font-size: 18px; line-height: 1.5em;">Fall 2018 CS 4803 / 7643 Deep Learning: Class Project</span><br>
 <span style="font-size: 18px; line-height: 1.5em;">Georgia Tech</span>
 <hr>
@@ -61,7 +61,7 @@ A flowchart like figure showing how we take an input image, draws a bounding box
 
 <h4>How is it done today, and what are the limits of current practice?</h4>
   Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc. (reference), which are very expensive and require an algorithm to make sense of and fuse all the sensor information. In certain applications, such as driving off road, it might be infeasible to access many sensors.
-  In the field of video prediction research, there are many efforts on predicting entire images. However, predicting videos far into the future in real time has not been very successful, even with advanced network architecture and training scheme (reference). Another approach to video prediction leverages attention where only certain areas in an image are predicted while the rest remains still. The limit of this this approach is the assumption of a still background which does not hold in the autonomous driving setting.
+  In the field of video prediction research, there are many efforts on predicting entire images. However, predicting videos far into the future in real time has not been very successful, even with advanced network architecture and training scheme (<a href="https://arxiv.org/abs/1706.08033/">[1]</a>, <a href="https://arxiv.org/abs/1511.05440/">[2]</a>, <a href="https://arxiv.org/abs/1511.05440/">[3]</a>, <a href="https://arxiv.org/abs/1605.08104/">[4]</a>). Another approach to video prediction leverages attention where only certain areas in an image are predicted while the rest remains still. The limit of this this approach is the assumption of a still background which does not hold in the autonomous driving setting.
   <br>
   For this project, we considered pros and cons of both approaches in current video prediction research. Our approach takes advantage of masking/attention by using an object detector to create the mask, and avoids the background problem by predicting the movement of the mask only.
 
@@ -119,10 +119,9 @@ Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed 
 <img style="height: 300px;" alt="" src="images/results.png">
 </div>
 <br><br>
-
   <hr>
   <footer>
-  <p>© Ziyi Wang</p>
+  <p>© Ziyi Wang © Zhanzhan Zhao</p>
   </footer>
 </div>
 </div>
