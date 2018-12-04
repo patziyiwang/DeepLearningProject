@@ -1,0 +1,148 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671
+{\fonttbl\f0\froman\fcharset0 Times-Bold;\f1\froman\fcharset0 Times-Roman;\f2\fswiss\fcharset0 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue233;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c0\c0\c93333;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid201\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid3}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}}
+{\info
+{\title Deep Learning Class Project | Georgia Tech | Fall 2018: CS 4803 / 7643}}\vieww19500\viewh11240\viewkind0
+\deftab720
+\pard\pardeftab720\sl560\sa321\partightenfactor0
+
+\f0\b\fs48 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Obstacle Dynamics Prediction\
+\pard\pardeftab720\sl600\partightenfactor0
+
+\fs40 \cf2 Ziyi Wang
+\f1\b0\fs24 \
+\pard\pardeftab720\sl540\partightenfactor0
+
+\fs36 \cf2 Fall 2018 CS 4803 / 7643 Deep Learning: Class Project
+\fs24 \
+
+\fs36 Georgia Tech
+\fs24 \
+\pard\pardeftab720\sl280\sa120\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf2 This webpage template is based on a similar template from Dr. Devi Parikh's {\field{\*\fldinst{HYPERLINK "https://samyak-268.github.io/F18CS4476/"}}{\fldrslt \cf3 \ul \ulc3 \strokec3 Intro to Computer Vision course}}.\
+\pard\pardeftab720\sl440\sa298\partightenfactor0
+
+\f0\b\fs36 \cf2 Abstract\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\b0\fs24 \cf2 The problem we try to tackle in this project is obstacle movement prediction, which is essential to research on autonomous driving with only visual information. We split the problem into two parts: first identify the obstacle by drawing a bounding box around it, then predict its movements by focusing on the bounding box dynamics instead of the whole image. One or two sentences on the main result you obtained. \
+\
+\pard\pardeftab720\sl440\sa298\partightenfactor0
+
+\f0\b\fs36 \cf2 Teaser figure\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\b0\fs24 \cf2 A flowchart like figure showing how we take an input image, draws a bounding box and predicts its movements. (This one is from {\field{\*\fldinst{HYPERLINK "https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks"}}{\fldrslt \cf3 \ul \ulc3 \strokec3 AlexNet}}.) \
+\
+\pard\pardeftab720\sl280\qc\partightenfactor0
+\cf2 \pard\pardeftab720\sl280\qc\partightenfactor0
+\cf2  \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf2 \
+\
+\pard\pardeftab720\sl440\sa298\partightenfactor0
+
+\f0\b\fs36 \cf2 Introduction / Background / Motivation\
+\pard\pardeftab720\sl280\sa319\partightenfactor0
+
+\fs24 \cf2 What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\b0 \cf2 In this project, we work on predicting the movements of one or more obstacles captured in a video. We try to do so by first applying an object detector/tracker which draws bounding boxes around obstacles of interest. We then predict the movements and shrinking/expanding of the bounding boxes, which reflect the dynamics of the obstacles. In the project we tackle this problem in the context of autonomous driving, where we use videos taken by a car-mounted camera and try to predict movements of other cars in the video.\
+\pard\pardeftab720\sl280\sa319\partightenfactor0
+
+\f0\b \cf2 How is it done today, and what are the limits of current practice?\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\b0 \cf2 Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc. (reference), which are very expensive and require an algorithm to make sense of and fuse all the sensor information. In certain applications, such as driving off road, it might be infeasible to access many sensors. In the field of video prediction research, there are many efforts on predicting entire images. However, predicting videos far into the future in real time has not been very successful, even with advanced network architecture and training scheme [1-4]. Another approach to video prediction leverages attention where only certain areas in an image are predicted while the rest remains still. The limit of this this approach is the assumption of a still background which does not hold in the autonomous driving setting. \
+For this project, we considered pros and cons of both approaches in current video prediction research. Our approach takes advantage of masking/attention by using an object detector to create the mask, and avoids the background problem by predicting the movement of the mask only.\
+\pard\pardeftab720\sl280\sa319\partightenfactor0
+
+\f0\b \cf2 Who cares? If you are successful, what difference will it make?\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\b0 \cf2 The success of this project is important for future research on obstacle avoidance in autonomous driving with only visual information. The output of the pipeline resulted from this project can be post-processed by another module to estimate the obstacle location and size, which can then be used by a path planner. This would allow for an autonomous driving framework requiring only visual information from a single camera. \
+\
+\pard\pardeftab720\sl440\sa298\partightenfactor0
+
+\f0\b\fs36 \cf2 Approach\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\b0\fs24 \cf2 We broke the problem into two parts: obstacle detection/tracking and obstacle dynamics prediction. For the tracking part we turned to existing obstacle detection algorithms since there are plenty of existing work in this field.\
+\pard\pardeftab720\sl340\sa280\partightenfactor0
+
+\f0\b\fs28 \cf2 Tracking\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl280\sa319\partightenfactor0
+\ls1\ilvl0
+\fs24 \cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?\uc0\u8232 
+\f1\b0 We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed. For obstacle dynamics prediction we used 
+\f0\b What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?\uc0\u8232 
+\f1\b0 We turn our focus to study more recent development of object tracking with deep learning techniques anticipating more statble object box tracking. We found ECO(Efficient Convolution Operators for Tracking) out ferformed all the trackers we had tried previously and satisfied our requirement for box tracking so that we can previde a stable tracker for our next steps of dynamics prediciton. \
+\pard\pardeftab720\sl340\sa280\partightenfactor0
+
+\f0\b\fs28 \cf2 Obstacle Dynamics Prediction\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl280\sa319\partightenfactor0
+\ls2\ilvl0
+\fs24 \cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?\uc0\u8232 
+\f1\b0 Obstacle prediction 
+\f0\b What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?\uc0\u8232 
+\f1\b0 Exploding gradient \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf2 \
+\
+\pard\pardeftab720\sl440\sa298\partightenfactor0
+
+\f0\b\fs36 \cf2 ECO: Efficient Convolution Operators for Tracking\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl340\partightenfactor0
+\ls3\ilvl0
+\fs28 \cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1.	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Factorized Convolution Operator\
+\ls3\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2.	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Generative Sample Space Model\
+\ls3\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3.	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Model Update Strategy\
+\pard\pardeftab720\sl440\sa298\partightenfactor0
+
+\fs36 \cf2 Experiments and Results\
+Reference\
+
+\f2\b0\fs24 \cf0 \outl0\strokewidth0 1. Villegas, Ruben, Jimei Yang, Yuliang Zou, Sungryull Sohn, Xunyu Lin, and Honglak Lee. "Learning to generate long-term future via hierarchical prediction." arXiv preprint arXiv:1704.05831 (2017).\
+2. Lotter, William, Gabriel Kreiman, and David Cox. "Deep predictive coding networks for video prediction and unsupervised learning." arXiv preprint arXiv:1605.08104 (2016).\
+\pard\pardeftab720\partightenfactor0
+\cf0 3. Mathieu, Michael, Camille Couprie, and Yann LeCun. "Deep multi-scale video prediction beyond mean square error." arXiv preprint arXiv:1511.05440 (2015).\
+\
+4. Villegas, Ruben, Jimei Yang, Seunghoon Hong, Xunyu Lin, and Honglak Lee. "Decomposing motion and content for natural video sequence prediction." arXiv preprint arXiv:1706.08033 (2017).
+\f0\b\fs36 \cf2 \outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\sl440\sa298\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl280\sa319\partightenfactor0
+
+\fs24 \cf2 How did you measure success? What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why?\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\b0 \cf2 Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. \
+\
+\pard\pardeftab720\sl280\qc\partightenfactor0
+\cf2  \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf2 \
+\
+\pard\pardeftab720\sl280\sa120\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl280\sa240\partightenfactor0
+\cf2 \'a9 Ziyi Wang\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf2 \
+\
+}
