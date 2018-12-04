@@ -11,10 +11,11 @@ def visualize(image, name):
     plt.savefig(name + ".png")
     plt.close()
 
-def plot_loss(loss_history, file_name):
+def plot_loss(loss_history, file_name, title):
     plt.figure()
     plt.plot(range(len(loss_history)), loss_history)
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
+    plt.title(title)
     plt.savefig(file_name + ".png")
     plt.close()

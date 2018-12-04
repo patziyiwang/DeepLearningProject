@@ -59,7 +59,7 @@ def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32
 
     end_idx = len(dataset)/batch_size
 
-    loss_fn = nn.MSELoss()
+    loss_fn = nn.L1Loss()
     optimizer = optim.Adam(params=model.parameters(), lr=lr, weight_decay=weight_decay)
 
     loss_history = []
@@ -177,14 +177,14 @@ def train():
     batch = 64 #Cannot be more than 64
     n_layers = 1 #Cannot be more than 1 or get cudnn error
     n_epochs = 100
-    learning_rate = 1*10**-5
+    learning_rate = 5*10**-5
     weight_decay = 0.001 #Regularization
     grad_clip = 25
 
     #True if training recurrently(Given seen_step predict fut_step)
     recurrent = True
-    seen_step = 5
-    fut_step = 5
+    seen_step = 7
+    fut_step = 3
     seq_length = seen_step + fut_step
 
     #Load data
@@ -195,16 +195,16 @@ def train():
     #Create/Load dataset from data. Dataset contains sequences of data of length seq_length
     # dataset = AutorallyDataset(seq_length, data)
     # dataset.save("testDataset")
-    dataset = pickle.load(open("testDataset.pkl", "r"))
+    dataset = pickle.load(open("testDataset_old.pkl", "r"))
     print("Data loaded successfully\n")
 
     #Data dimensions
-    input_size = data[0].shape[0]*data[0].shape[1] #n_row*n_col
+    input_size = dataset[0]["input"].shape[1]*dataset[0]["input"].shape[2] #n_row*n_col
     output_size = input_size
 
     #Model save path and name information
     model_save_path = ""
-    model_name = "test_recurrent"
+    model_name = "test_recurrentL1"
 
     #Create LSTM model
     model = LSTM(input_size, hidden_size, batch, output_dim=output_size, num_layers=n_layers, dropout=dropout)
@@ -224,28 +224,28 @@ def train():
     else:
         loss_history = train_batch(model, dataset, n_epochs, seq_length=seq_length, batch_size=batch, lr=learning_rate, weight_decay=weight_decay, grad_clip=grad_clip)
 
-    pdb.set_trace()
     save_model(model_save_path, model_name, model)
     pickle.dump(loss_history, open("loss_" + model_name + ".pkl", "w"))
+    plot_loss(loss_history, "loss_" + model_name, "L1 Loss")
 
 def test():
     #Load model
     model_path = ""
-    model_name = "test_recurrent"
+    model_name = "test_recurrentL1"
     model = load_model(model_path, model_name)
     print("Model loaded\n")
 
     # Create/Load dataset from data. Dataset contains sequences of data of length seq_length
     # dataset = AutorallyDataset(seq_length, data)
     # dataset.save("testDataset")
-    dataset = pickle.load(open("testDataset.pkl", "r"))
+    dataset = pickle.load(open("testDataset_old.pkl", "r"))
     print("Data loaded successfully\n")
 
     #Results save path
-    result_path = "results/"
+    result_path = "results/recurrentL1/"
 
-    seen_step = 5
-    fut_step = 5
+    seen_step = 7
+    fut_step = 3
     batch_size = 64
 
     output, truth = model_eval(model, dataset[-batch_size:], seen_step=seen_step, fut_step=fut_step, batch_size=batch_size)
