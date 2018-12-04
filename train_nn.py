@@ -8,6 +8,8 @@ from nn import LSTM
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from visualization import visualize, plot_loss
+import matplotlib.pyplot as plt
+import os
 import pdb
 
 
@@ -128,8 +130,6 @@ def model_eval(model, dataset, seen_step, fut_step, batch_size=32):
 
     seq_length = seen_step + fut_step
 
-    pdb.set_trace()
-
     for batch_idx, batch in enumerate(dataloader):
         if batch_idx == end_idx:
             break
@@ -150,6 +150,11 @@ def model_eval(model, dataset, seen_step, fut_step, batch_size=32):
         loss_total += loss.detach().item()
 
     print("Total loss for test set: " + str(loss_total))
+
+    n_row = dataset[0]["input"].shape[1]
+    n_col = dataset[0]["input"].shape[2]
+
+    return pred_seq.view(fut_step, batch_size, n_row, n_col), truth_seq.view(fut_step, batch_size, n_row, n_col)
 
 
 def loadData(data_path, file_name):
@@ -236,8 +241,27 @@ def test():
     dataset = pickle.load(open("testDataset.pkl", "r"))
     print("Data loaded successfully\n")
 
-    model_eval(model, dataset[0], seen_step=5, fut_step=5, batch_size=1)
+    #Results save path
+    result_path = "results/"
+
+    seen_step = 5
+    fut_step = 5
+    batch_size = 64
+
+    output, truth = model_eval(model, dataset[-batch_size:], seen_step=seen_step, fut_step=fut_step, batch_size=batch_size)
+    output = output.cpu().detach().numpy()
+    truth = truth.cpu().detach().numpy()
+
+    #Plotting the output and the ground truth
+    for j in range(batch_size):
+        for i in range(fut_step):
+            if not os.path.exists(result_path + "sequence" + str(j+1) + "/"):
+                os.makedirs(result_path + "sequence" + str(j+1) + "/")
+            output_img = output[i, j, :, :]
+            truth_img = truth[i, j, :, :]
+            visualize(output_img, result_path + "sequence" + str(j+1) + "/" + "output_" + str(i+1))
+            visualize(truth_img, result_path + "sequence" + str(j+1) + "/" + "truth_" + str(i+1))
 
 if __name__ == "__main__":
-    train()
-    # test()
+    # train()
+    test()
