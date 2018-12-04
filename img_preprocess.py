@@ -71,4 +71,6 @@ if __name__ == "__main__":
     images = np.zeros((6043,a,b))
 
     new_images = createBoxes(images, cc, scaling)
+    import pdb
+    pdb.set_trace()
     saveImages(new_images, 'bbox_data')
