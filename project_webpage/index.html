@@ -42,7 +42,7 @@ This webpage template is based on a similar template from Dr. Devi Parikh's
 <!-- Goal -->
 <h2>Abstract</h2>
 
-The problem we try to tackle in this project is obstacle movement prediction, which is essential to research on autonomous driving with only visual information. We split the problem into two parts: first identify the obstacle by drawing a bounding box around it, then predict its movements by focusing on the bounding box dynamics instead of the whole image. One or two sentences on the main result you obtained.
+  The problem we try to tackle in this project is obstacle movement prediction, which is essential to research on autonomous driving with only visual information. We split the problem into two parts: first identify the obstacle by drawing a bounding box around it, then predict its movements by focusing on the bounding box dynamics instead of the whole image. One or two sentences on the main result you obtained.
 <br><br>
 <!-- figure -->
 <h2>Teaser figure</h2>
@@ -56,27 +56,30 @@ A flowchart like figure showing how we take an input image, draws a bounding box
 <br><br>
 <!-- Introduction -->
 <h2>Introduction / Background / Motivation</h2>
-In this project, we work on predicting the movments of one or more obstacles captured in a video. This is an essential part of research on autonomous driving since most applications today require various sensors like LIDAR, stereo camera, GPS, etc, which are very expensive. The ability to predict obstacle movements in real time with only single/multiple cameras would greatly expedite the progress of visual based autonomous driving.
+  In this project, we work on predicting the movments of one or more obstacles captured in a video. This is an essential part of research on autonomous driving since most applications today require various sensors like LIDAR, stereo camera, GPS, etc, which are very expensive. The ability to predict obstacle movements in real time with only single/multiple cameras would greatly expedite the progress of visual based autonomous driving.
 <br>
-The current researh on autonomous driving focuses on the prediction of entire images. The limits with this approach are twofold: it is very difficult to predict very far into the future with high fidelity in real time, and it also wastes computation on prediction of the background, which might not be required in the path planning and control module.
+  The current researh on autonomous driving focuses on the prediction of entire images. The limits with this approach are twofold: it is very difficult to predict very far into the future with high fidelity in real time, and it also wastes computation on prediction of the background, which might not be required in the path planning and control module.
 
 <h4>What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.</h4>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  In this project, we work on predicting the movments of one or more obstacles captured in a video. We try to do so by first applying an object detector/tracker which draws bounding boxes around obstacles of interest. We then predict the movements and shrinking/expanding of the bounding boxes, which reflect the dynamics of the obstacles.
 
 <h4>How is it done today, and what are the limits of current practice?</h4>
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  Most of the current research and application on obstacle avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc., which are very expensive and require an algorithm that makes sense of all the sensor information. In the field of video prediction, there are many efforts on predicting entire images...
 
 <h4>Who cares? If you are successful, what difference will it make?</h4>
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+  The success of this project is very significant for...
 
 <br><br>
 <!-- Approach -->
 <h2>Approach</h2>
 <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
-<ul>
+
+  We broke the problem into two parts: obstacle detection/tracking and obstacle dynamics prediction. For the tracking part we turned to existing obstacle detection algorithms since there are plenty of existing work in this field. 
+  <ul>
   <li><b>Tracking</b></li>
   We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed. 
-  <li><b>Dynamics prediction</b></li>
+  <li><b>Obstacle Dynamics Prediction</b></li>
+  For obstacle dynamics prediction we used
 </ul>
 
 <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
@@ -99,6 +102,7 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
 
 <!-- Results -->
 <h2>Experiments and Results</h2>
+
 <h4>How did you measure success? What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why?</h4>
 Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
 

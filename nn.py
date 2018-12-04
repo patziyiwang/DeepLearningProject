@@ -16,7 +16,7 @@ class LSTM(nn.Module):
         self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.num_layers, dropout=dropout)
         self.decoder = nn.Linear(self.hidden_dim, self.output_dim)
 
-        #Initialize hidden states, default is zero
+        #Initialize hidden states, can use zero or normal or custom
         if h0 is None:
             self.h0 = torch.randn(self.num_layers, self.batch_size, self.hidden_dim) #torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)
             self.c0 = torch.randn(self.num_layers, self.batch_size, self.hidden_dim) #torch.zeros(self.num_layers, self.batch_size, self.hidden_dim)

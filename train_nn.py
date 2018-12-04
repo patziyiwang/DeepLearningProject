@@ -7,6 +7,7 @@ from get_batch import AutorallyDataset
 from nn import LSTM
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
+from visualization import visualize, plot_loss
 import pdb
 
 
@@ -57,9 +58,11 @@ def train_recurrent(model, dataset, n_epochs, seen_step, fut_step, batch_size=32
     end_idx = len(dataset)/batch_size
 
     loss_fn = nn.MSELoss()
-    optimizer = optim.RMSprop(params=model.parameters(), lr=lr, weight_decay=weight_decay)
+    optimizer = optim.Adam(params=model.parameters(), lr=lr, weight_decay=weight_decay)
 
     loss_history = []
+
+    seq_length = seen_step + fut_step
 
     for epoch in range(n_epochs):
         loss_total = 0
@@ -123,6 +126,10 @@ def model_eval(model, dataset, seen_step, fut_step, batch_size=32):
 
     loss_total = 0
 
+    seq_length = seen_step + fut_step
+
+    pdb.set_trace()
+
     for batch_idx, batch in enumerate(dataloader):
         if batch_idx == end_idx:
             break
@@ -157,7 +164,8 @@ def load_model(model_path, file_name):
     return torch.load(model_path + file_name + ".pt")
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+def train():
     #Tunable network&training parameters
     hidden_size = 16 #Cannot be more than 16 or get nan
     dropout = 0 #Applies to every layer but the last layer
@@ -211,5 +219,25 @@ if __name__ == "__main__":
     else:
         loss_history = train_batch(model, dataset, n_epochs, seq_length=seq_length, batch_size=batch, lr=learning_rate, weight_decay=weight_decay, grad_clip=grad_clip)
 
+    pdb.set_trace()
     save_model(model_save_path, model_name, model)
-    pickle.dump(loss_history, "loss_" + model_name + ".pkl")
+    pickle.dump(loss_history, open("loss_" + model_name + ".pkl", "w"))
+
+def test():
+    #Load model
+    model_path = ""
+    model_name = "test_recurrent"
+    model = load_model(model_path, model_name)
+    print("Model loaded\n")
+
+    # Create/Load dataset from data. Dataset contains sequences of data of length seq_length
+    # dataset = AutorallyDataset(seq_length, data)
+    # dataset.save("testDataset")
+    dataset = pickle.load(open("testDataset.pkl", "r"))
+    print("Data loaded successfully\n")
+
+    model_eval(model, dataset[0], seen_step=5, fut_step=5, batch_size=1)
+
+if __name__ == "__main__":
+    train()
+    # test()
