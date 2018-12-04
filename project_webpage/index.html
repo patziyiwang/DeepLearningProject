@@ -31,7 +31,11 @@ color: #FF9900;
 
 <!-- Title and Name -->
 <h1>Obstacle Dynamics Prediction</h1>
+<<<<<<< Updated upstream
 <span style="font-size: 20px; line-height: 1.5em;"><strong>Liexiao Ding, Ziyi Wang, Zhanzhan Zhao</strong></span><br> 
+=======
+<span style="font-size: 20px; line-height: 1.5em;"><strong>Ziyi Wang, Zhanzhan Zhao</strong></span><br>
+>>>>>>> Stashed changes
 <span style="font-size: 18px; line-height: 1.5em;">Fall 2018 CS 4803 / 7643 Deep Learning: Class Project</span><br>
 <span style="font-size: 18px; line-height: 1.5em;">Georgia Tech</span>
 <hr>
@@ -90,10 +94,13 @@ A flowchart like figure showing how we take an input image, draws a bounding box
   <br>
   The network structure we used is a LSTM, since we are trying to predict the temporal evolution of the masks. The network takes in the flattened masks and outputs a mask of the same size at the next frame. The hyperparameters related to the network are hidden state dimensions, number of LSTM layers and dropout probability. For training, we used three different techniques. The first technique is Teacher Forcing, where we always use the true mask as the input to the network. The other two approaches we took utilize an encoder-decoder framework, where we provide the network with true masks for a certain number of frames and then use the last hidden state which contains the encoded information to predict another number of frames. For prediction, we tried using both the predicted mask as input to the next step and using only a dummy input of zeros, in which case only the hidden state information is used for prediction. In this case we introduced one more hyperparameter in the fraction of the sequence used for prediction.
   <br>
-
+  The loss function used is MSE loss, and Adam with weight decay was the optimizer. The gradient was also clipped to prevent the exploding gradient problem common in recurrent networks.
 
   <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
-  Exploding gradient
+  The main problem we expected is exploding gradient. We did encounter this problem and found that it is closely related to the hidden state size. Hidden state size too large resulted in normal prediction in the first few batches and NaN after gradient exploded. To tackle this problem we tried different weight and initial hidden state initialization. We found that the default weight initialization worked better than other popular initilization (kaiming_normal, xavier_uniform, xavier_normal), and random normal works better than zeros for hidden state initialization.
+  <br>
+  Another problem 
+
 </ul>
 <br><br>
 
@@ -116,19 +123,28 @@ The following are the visualization of tracker BOOSTING, MIL and TLD.
 <img src="./images/tracked_Car1_BOOSTING.gif" alt="BOOSTING">
 <img src="./images/tracked_Car1_MIL.gif" alt="MIL">
 <img src="./images/tracked_Car1_TLD.gif" alt="TLD">
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 <br><br>
 We trained an ECO tracker and it's the only tracker tested that correctly tracked our target object.
 <br><br>
 <img src="./images/tracked_Car1_ECO.gif" alt="ECO">
 
 <!-- Main Results Figure -->
+<<<<<<< Updated upstream
 <!-- <div style="text-align: center;">
 <img style="height: 300px;" alt="" src="images/results.png"> -->
 </div>
+=======
+<div style="text-align: center;">
+<!--=<img style="height: 300px;" alt="" src="images/results.png">-->
+>>>>>>> Stashed changes
 <br><br>
   <hr>
   <footer>
-  <p>© Ziyi Wang © Zhanzhan Zhao</p>
+  <p>© Ziyi Wang, Zhanzhan Zhao</p>
   </footer>
 </div>
 </div>
