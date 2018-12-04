@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head>  
+<html lang="en"><head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
   <title>Deep Learning Class Project
@@ -8,7 +8,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-<!-- Le styles -->  
+<!-- Le styles -->
   <link href="css/bootstrap.css" rel="stylesheet">
 <style>
 body {
@@ -21,7 +21,7 @@ color: #3366CC;
 color: #FF9900;
 }
 </style>
-  
+
 <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
 </head>
 
@@ -29,8 +29,8 @@ color: #FF9900;
 <div class="container">
 <div class="page-header">
 
-<!-- Title and Name --> 
-<h1>Obstacle Dynamics Prediction</h1> 
+<!-- Title and Name -->
+<h1>Obstacle Dynamics Prediction</h1>
 <span style="font-size: 20px; line-height: 1.5em;"><strong>Ziyi Wang</strong></span><br>
 <span style="font-size: 18px; line-height: 1.5em;">Fall 2018 CS 4803 / 7643 Deep Learning: Class Project</span><br>
 <span style="font-size: 18px; line-height: 1.5em;">Georgia Tech</span>
@@ -48,7 +48,7 @@ This webpage template is based on a similar template from Dr. Devi Parikh's
 <h2>Teaser figure</h2>
 A flowchart like figure showing how we take an input image, draws a bounding box and predicts its movements. (This one is from <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks">AlexNet</a>.)
 <br><br>
-<!-- Main Illustrative Figure --> 
+<!-- Main Illustrative Figure -->
 <div style="text-align: center;">
 <img style="height: 200px;" alt="" src="images/alexnet.png">
 </div>
@@ -62,19 +62,21 @@ A flowchart like figure showing how we take an input image, draws a bounding box
 <h4>How is it done today, and what are the limits of current practice?</h4>
   Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc. (reference), which are very expensive and require an algorithm to make sense of and fuse all the sensor information. In certain applications, such as driving off road, it might be infeasible to access many sensors.
   In the field of video prediction research, there are many efforts on predicting entire images. However, predicting videos far into the future in real time has not been very successful, even with advanced network architecture and training scheme (reference). Another approach to video prediction leverages attention where only certain areas in an image are predicted while the rest remains still. The limit of this this approach is the assumption of a still background which does not hold in the autonomous driving setting.
+  <br>
+
 
 <h4>Who cares? If you are successful, what difference will it make?</h4>
-  The success of this project is very significant for...
+  The success of this project is important for future research on obstacle avoidance in autonomous driving with only visual information. The output of the pipeline resulted from this project can be postprocessed by another module to estimate the obstacle location and size, which can then be used by a path planner. This would allow for a framework capable of 
 
 <br><br>
 <!-- Approach -->
 <h2>Approach</h2>
 <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
 
-  We broke the problem into two parts: obstacle detection/tracking and obstacle dynamics prediction. For the tracking part we turned to existing obstacle detection algorithms since there are plenty of existing work in this field. 
+  We broke the problem into two parts: obstacle detection/tracking and obstacle dynamics prediction. For the tracking part we turned to existing obstacle detection algorithms since there are plenty of existing work in this field.
   <ul>
   <li><b>Tracking</b></li>
-  We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed. 
+  We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed.
   <li><b>Obstacle Dynamics Prediction</b></li>
   For obstacle dynamics prediction we used
 </ul>
@@ -105,14 +107,14 @@ Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed 
 
 <br><br>
 
-<!-- Main Results Figure --> 
+<!-- Main Results Figure -->
 <div style="text-align: center;">
 <img style="height: 300px;" alt="" src="images/results.png">
 </div>
 <br><br>
 
   <hr>
-  <footer> 
+  <footer>
   <p>© Ziyi Wang</p>
   </footer>
 </div>
