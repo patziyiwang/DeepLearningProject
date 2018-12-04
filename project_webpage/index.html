@@ -63,30 +63,32 @@ A flowchart like figure showing how we take an input image, draws a bounding box
   Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc. (reference), which are very expensive and require an algorithm to make sense of and fuse all the sensor information. In certain applications, such as driving off road, it might be infeasible to access many sensors.
   In the field of video prediction research, there are many efforts on predicting entire images. However, predicting videos far into the future in real time has not been very successful, even with advanced network architecture and training scheme (reference). Another approach to video prediction leverages attention where only certain areas in an image are predicted while the rest remains still. The limit of this this approach is the assumption of a still background which does not hold in the autonomous driving setting.
   <br>
-
+  For this project, we considered pros and cons of both approaches in current video prediction research. Our approach takes advantage of masking/attention by using an object detector to create the mask, and avoids the background problem by predicting the movement of the mask only.
 
 <h4>Who cares? If you are successful, what difference will it make?</h4>
-  The success of this project is important for future research on obstacle avoidance in autonomous driving with only visual information. The output of the pipeline resulted from this project can be postprocessed by another module to estimate the obstacle location and size, which can then be used by a path planner. This would allow for a framework capable of 
+  The success of this project is important for future research on obstacle avoidance in autonomous driving with only visual information. The output of the pipeline resulted from this project can be postprocessed by another module to estimate the obstacle location and size, which can then be used by a path planner. This would allow for an autonomous driving framework requiring only visual information from a single camera.
 
 <br><br>
 <!-- Approach -->
 <h2>Approach</h2>
-<h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
 
   We broke the problem into two parts: obstacle detection/tracking and obstacle dynamics prediction. For the tracking part we turned to existing obstacle detection algorithms since there are plenty of existing work in this field.
+  <h3>Tracking</h3>
   <ul>
-  <li><b>Tracking</b></li>
+  <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
   We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed.
-  <li><b>Obstacle Dynamics Prediction</b></li>
   For obstacle dynamics prediction we used
+
+  <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
+  We turn our focus to study more recent development of object tracking with deep learning techniques anticipating more statble object box tracking. We found ECO(Efficient Convolution Operators for Tracking) out ferformed all the trackers we had tried previously and satisfied our requirement for box tracking so that we can previde a stable tracker for our next steps of dynamics prediciton.
 </ul>
 
-<h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
+  <h3>Obstacle Dynamics Prediction</h3>
 <ul>
-  <li><b>Tracking</b></li>
-  We turn our focus to study more recent development of object tracking with deep learning techniques anticipating more statble object box tracking. We found ECO(Efficient Convolution Operators for Tracking) out ferformed all the trackers we had tried previously and satisfied our requirement for box tracking so that we can previde a stable tracker for our next steps of dynamics prediciton.
-
-  <li><b>Dynamics prediction</b></li>
+  <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
+  Obstacle prediction
+  <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
+  Exploding gradient
 </ul>
 <br><br>
 
