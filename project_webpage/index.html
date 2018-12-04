@@ -76,11 +76,11 @@ A flowchart like figure showing how we take an input image, draws a bounding box
   <h3>Tracking</h3>
   <ul>
   <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
-  We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed.
+  We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed. 
   For obstacle dynamics prediction we used
 
   <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
-  We turn our focus to study more recent development of object tracking with deep learning techniques anticipating more statble object box tracking. We found ECO(Efficient Convolution Operators for Tracking) out ferformed all the trackers we had tried previously and satisfied our requirement for box tracking so that we can previde a stable tracker for our next steps of dynamics prediciton.
+  We turn our focus to study more recent development of object tracking with deep learning techniques anticipating more statble object box tracking. We found ECO(Efficient Convolution Operators for Tracking) out ferformed all the trackers we had tried previously and satisfied our requirement for box tracking so that we can previde a stable tracker for our next steps of dynamics prediciton. Eco addresses both of the problems of computational complexity and over-fitting. The integration of high-dimensional feature map has let to a radical increase in the number of appearance model parameter, which can easily cause the over-fitting problem. While ECO use the Factorized Convolution Operator to reduced the learning complexity, that is, it efficiently select the  filters with high energies so that the model doesn’t have to learn so much parameter at the same time. 
 </ul>
 
   <h3>Obstacle Dynamics Prediction</h3>
