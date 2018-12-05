@@ -95,6 +95,8 @@ Eco addresses both problems of computational complexity and over-fitting. The in
   Design of the video prediction network structure: the network structure is based on LSTM, since the temporal evolution of the masks is tried to be predicted. The network takes in the flattened masks and outputs a mask of the same size at the next frame. The hyperparameters related to the network are hidden state dimensions, number of LSTM layers and dropout probability.
  <br>
 Moreover, three different techniques are tried to get better results. The first technique is Teacher Forcing, where we always use the true mask as the input to the network to get prediction of future steps of images. For the second approach,  inspired by <a href="https://arxiv.org/abs/1704.05831/">[4]</a>, we utilize an encoder-decoder framework on top of the LSTM, where we provide the network with true masks for a certain number of frames and then use the last hidden state which contains the encoded information to predict another number of frames. We firstly follows <a href="https://arxiv.org/abs/1704.05831/">[4]</a>, where only a dummy input of zeros are as the input to predict the future masks, in which case only the hidden state information is used for prediction. Not being able to get ideal results, we modified the framework by using the predicted mask as input to the next step. In this case we introduced one more hyperparameter in the fraction of the sequence used for prediction.
+<br><br>
+<img src="./images/structure.jpg" alt="ECO">
   <br>
   We tried both L1 and MSE loss, and they resulted in different behaviors in outputs. Adam with weight decay was used as the optimizer. The gradient was also clipped to prevent the exploding gradient problem common in recurrent networks.
 
