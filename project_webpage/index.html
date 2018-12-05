@@ -57,14 +57,16 @@ The flowchart below shows the network structure with an input image to identify,
   In this project, we work on identifying, tracking and predicting the moving obstacles captured in a video. We try to do so by first applying an object detector and tracker which draw bounding boxes around moving obstacles of interest, and then predict the movements and shrinking/expanding of the bounding boxes. We use videos taken by a car-mounted camera and other cars in the video are viewed as moving obstacles to draw boxes from.
 
 <h4>How is it done today, and what are the limits of current practice?</h4>
-  Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc, which are expensive compared with cameras. Moreover, in scenarios like driving off road, it might be infeasible to always access sensors like GPS.
+
+  Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc, which are expensive compared with cameras. Moreover, in scenarios like driving off road, it might be infeasible to always access sensors like GPS. 
+  <br>
   In the field of video prediction research, Most efforts have been drawn on predicting the entire images. However, predicting videos far into the future in real time has not been very successful, even with advanced network architecture and training scheme (<a href="https://arxiv.org/abs/1706.08033/">[1]</a>, <a href="https://arxiv.org/abs/1511.05440/">[2]</a>, <a href="https://arxiv.org/abs/1605.08104/">[3]</a>). A recent paper in video prediction <a href="https://arxiv.org/abs/1704.05831/">[4]</a> uses attention where only certain areas in an image are predicted while the rest remains still. The limit of this approach is the assumption of a still background which does not hold in autonomous driving setting.
   <br>
 
 
 <h4>Who cares? If you are successful, what difference will it make?</h4>
   The success of this project is important for future research on obstacle avoidance in autonomous driving with only visual information. The output of the pipeline resulted from this project can be postprocessed by another module to estimate the obstacle location and size, which can then be used by a path planner. This would allow an autonomous driving framework requiring only visual information from a single camera.
-
+  <br>
   Moreover, in the same spirit of <a href="https://arxiv.org/abs/1704.05831/">[4]</a>, we try to predict the moving object, but by using an object tracker to create the mask we are able to avoid the background problem which has to be still. So it can also a meaningful combination in video prediction research.
 
 <br><br>
@@ -75,19 +77,28 @@ The flowchart below shows the network structure with an input image to identify,
   <h3>Tracking</h3>
   <ul>
   <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
-  We first tried a set of state of the art object tracker based on AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN. These tracker performs quite decent when there is not much occlusion. However, if we encounter only slight occlusion, all of the abovementioned tracker failed.
+
+  We first tried a set of state-of-the-art object tracker: AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN, which all performed well with only slight occlusion. But to make the tracker more stable, we finally chose <a href="https://arxiv.org/abs/1611.09224">ECO: Efficient Convolution Operators for Tracking</a>, which out performed all the trackers we had tried previously and satisfied our requirement for box tracking. 
+  
 
   <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
-  We turn our focus to study more recent development of object tracking with deep learning techniques anticipating more statble object box tracking. We found <a href="https://arxiv.org/abs/1611.09224">ECO: Efficient Convolution Operators for Tracking</a> out ferformed all the trackers we had tried previously and satisfied our requirement for box tracking so that we can previde a stable tracker for our next steps of dynamics prediciton. Eco addresses both of the problems of computational complexity and over-fitting. The integration of high-dimensional feature map has let to a radical increase in the number of appearance model parameter, which can easily cause the over-fitting problem. While ECO use the Factorized Convolution Operator to reduced the learning complexity, that is, it efficiently select the  filters with high energies so that the model doesn’t have to learn so much parameter at the same time.
+  To get a more stable object box tracking algorithm, we turned to more recent deep learning techniques, and found <a href="https://arxiv.org/abs/1611.09224">ECO</a> out performs all the trackers and satisfies our requirement for video prediciton. 
+<br>
+Eco addresses both problems of computational complexity and over-fitting. The integration of high-dimensional feature map leads to a radical increase in the number of appearance model parameters, which can easily cause the over-fitting problem. ECO uses the Factorized Convolution Operator to reduce the learning complexity, that is, it efficiently selects the filters with high energy so that there is no need to learn too many parameters for the model. 
+
 
 </ul>
 
-  <h3>Obstacle Dynamics Prediction</h3>
+  <h3>Video Prediction of the Moving Obstacles</h3>
 <ul>
   <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
-  For obstacle dynamics prediction, we first took the bounding box information in each image/frame and created a mask the same size of the image with zeros everywhere except for inside the bounding boxes, where the value is set to 1. The masks were first shrunken by factors of 2 until a dimension size becomes odd or below 32. All the masks were then used to build a dataset of sequences. The sequence length is a hyperparameter and also a performance indicator. Each mask was flattened before fed into the network.
+  Since the idea to predict the video of the obstcales in real time is a fresh idea. The data preprocess, as well as the network structure are all proposed and developed by us. The following shows the details of the code development. 
+<br>
+  Data-Preprocess: Since only the movement of the bounding box is of interest, to greatly improve the training time, the image data was pre-processed as follows: we first extracted the bounding box pixel knowledge in each image and created a mask the same size of the original image with zeros everywhere except for inside the bounding boxes areas, where the values were set to 1. The masks were keeping shrunken by factors of 2 until a dimension size becomes odd or below 32. All the masks were then used to build a dataset of sequences. The sequence length was a hyperparameter and also a performance indicator. Each mask was flattened before fed into the network. 
   <br>
-  The network structure we used is a LSTM, since we are trying to predict the temporal evolution of the masks. The network takes in the flattened masks and outputs a mask of the same size at the next frame. The hyperparameters related to the network are hidden state dimensions, number of LSTM layers and dropout probability. For training, we used three different techniques. The first technique is Teacher Forcing, where we always use the true mask as the input to the network. The other two approaches we took utilize an encoder-decoder framework, where we provide the network with true masks for a certain number of frames and then use the last hidden state which contains the encoded information to predict another number of frames. For prediction, we tried using both the predicted mask as input to the next step and using only a dummy input of zeros, in which case only the hidden state information is used for prediction. In this case we introduced one more hyperparameter in the fraction of the sequence used for prediction.
+  Design of the video prediction network structure: the network structure is based on LSTM, since the temporal evolution of the masks is tried to be predicted. The network takes in the flattened masks and outputs a mask of the same size at the next frame. The hyperparameters related to the network are hidden state dimensions, number of LSTM layers and dropout probability. 
+ <br>
+Moreover, three different techniques are tried to get better results. The first technique is Teacher Forcing, where we always use the true mask as the input to the network to get prediction of future steps of images. For the second approach,  inspired by <a href="https://arxiv.org/abs/1704.05831/">[4]</a>, we utilize an encoder-decoder framework on top of the LSTM, where we provide the network with true masks for a certain number of frames and then use the last hidden state which contains the encoded information to predict another number of frames. We firstly follows <a href="https://arxiv.org/abs/1704.05831/">[4]</a>, where only a dummy input of zeros are as the input to predict the future masks, in which case only the hidden state information is used for prediction. Not being able to get ideal results, we modified the framework by using the predicted mask as input to the next step. In this case we introduced one more hyperparameter in the fraction of the sequence used for prediction.
   <br>
   We tried both L1 and MSE loss, and they resulted in different behaviors in outputs. Adam with weight decay was used as the optimizer. The gradient was also clipped to prevent the exploding gradient problem common in recurrent networks.
 
