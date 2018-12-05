@@ -146,7 +146,7 @@ We achieved our goal by using ECO to provide a stable tracker for future predici
     <br><br>
     The plots suggest that the network trains with both types of loss functions, altough L2 loss results in slightly lower final loss. In terms of training techniques, we only included encoder-decoder framework with dummy input since feeding output back in consistenly resulted in the CUDNN error. Between the two training techniques, the Teacher Forcing approach results in a smoother loss curve, which corresponds to a more stable training process as it is known for.
     <br>
-    We also visualized the output from each training senarios. The following plots are :
+    We also visualized the output from each training senarios. The following plots are the three frame prediction of Teacher Forcing with L1 loss, L2 loss, Encoder Decoder with L1 loss and L2 loss respectively, and the last row are the true masks:
     <br><br>
     <img style="width: 350px;" src="./images/batchL1_1.png" alt="">
     <img style="width: 350px;" src="./images/batchL1_2.png" alt="">
