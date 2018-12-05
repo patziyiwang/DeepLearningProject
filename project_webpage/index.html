@@ -74,7 +74,7 @@ color: #FF9900;
   <ul>
   <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
 
-  We first tried a set of state-of-the-art object tracker: AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN, which all performed well with only slight occlusion. But to make the tracker more stable, we finally chose <a href="https://arxiv.org/abs/1611.09224">ECO: Efficient Convolution Operators for Tracking</a>, which out performed all the trackers we had tried previously and satisfied our requirement for box tracking.
+  We first tried a set of state-of-the-art object tracker: AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN, which all performed well with only slight occlusion. But to make the tracker more stable, we finally chose <a href="https://arxiv.org/abs/1611.09224">ECO: Efficient Convolution Operators for Tracking</a>, which out performed all the trackers we had tried previously and satisfied our requirement for box tracking. Eco addresses both problems of computational complexity and over-fitting. The integration of high-dimensional feature map leads to a radical increase in the number of appearance model parameters, which can easily cause the over-fitting problem. ECO uses the Factorized Convolution Operator to reduce the learning complexity, that is, it efficiently selects the filters with high energy so that there is no need to learn too many parameters for the model. Since collecting a new sample in each frame leads to large redundancies in the sample set. ECO’s approach is based on the joint probability distribution p(x, y) of the sample feature maps x and corresponding outputs scores y. The complexity of sampling decrease sample size to number of Gaussian components. The standard approach in DCF based tracking is to update the model in each frame. Instead of updating the model in a continuous fashion every frame, ECO use a sparser updating scheme therefore, avoid explicitly detecting changes in the objective and simply update the filter by starting the optimization process in every NSth frame.
 
 
   <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
@@ -130,6 +130,8 @@ The following are the visualization of tracker BOOSTING, MIL and TLD:
 We trained an ECO tracker and it's the only tracker tested that correctly tracked our target object:
 <br><br>
 <img src="./images/tracked_Car1_ECO.gif" alt="ECO">
+<br><br>
+We achieved our goal by using ECO to provide a stable tracker for future prediciton steps.
 </ul>
 
 <h3>Obstacle Dynamics Prediction</h3>
