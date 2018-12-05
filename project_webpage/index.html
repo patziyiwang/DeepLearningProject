@@ -41,13 +41,9 @@ color: #FF9900;
 
   The problem that we try to tackle in this project is obstacle movement prediction, which is essential in research on autonomous driving with only visual information. We split the problem into two parts: first identifying and tracking the obstacle by drawing a bounding box around it, and then predicting the movement of the bounding box instead of the whole image.
 <br><br>
-<!-- figure -->
-<h2>Teaser Figure</h2>
-The flowchart below shows the network structure with an input image to identify, track and predict of the moving bounding box. (This one is from <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks">AlexNet</a>.)
-<br><br>
 <!-- Main Illustrative Figure -->
 <div style="text-align: center;">
-<img style="height: 200px;" alt="" src="images/alexnet.png">
+<img style="height: 250px;" alt="" src="images/teaser.jpg">
 </div>
 
 <br><br>
@@ -58,7 +54,7 @@ The flowchart below shows the network structure with an input image to identify,
 
 <h4>How is it done today, and what are the limits of current practice?</h4>
 
-  Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc, which are expensive compared with cameras. Moreover, in scenarios like driving off road, it might be infeasible to always access sensors like GPS. 
+  Most of the applications in obstacle detection/avoidance for autonomous driving rely on various sensors like LIDAR, sereo cameras, GPS, etc, which are expensive compared with cameras. Moreover, in scenarios like driving off road, it might be infeasible to always access sensors like GPS.
   <br>
   In the field of video prediction research, Most efforts have been drawn on predicting the entire images. However, predicting videos far into the future in real time has not been very successful, even with advanced network architecture and training scheme (<a href="https://arxiv.org/abs/1706.08033/">[1]</a>, <a href="https://arxiv.org/abs/1511.05440/">[2]</a>, <a href="https://arxiv.org/abs/1605.08104/">[3]</a>). A recent paper in video prediction <a href="https://arxiv.org/abs/1704.05831/">[4]</a> uses attention where only certain areas in an image are predicted while the rest remains still. The limit of this approach is the assumption of a still background which does not hold in autonomous driving setting.
   <br>
@@ -78,13 +74,13 @@ The flowchart below shows the network structure with an input image to identify,
   <ul>
   <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
 
-  We first tried a set of state-of-the-art object tracker: AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN, which all performed well with only slight occlusion. But to make the tracker more stable, we finally chose <a href="https://arxiv.org/abs/1611.09224">ECO: Efficient Convolution Operators for Tracking</a>, which out performed all the trackers we had tried previously and satisfied our requirement for box tracking. 
-  
+  We first tried a set of state-of-the-art object tracker: AdaBoost, Multiple Instance Learning, Kernelized Correlation Filters, and GOTURN, which all performed well with only slight occlusion. But to make the tracker more stable, we finally chose <a href="https://arxiv.org/abs/1611.09224">ECO: Efficient Convolution Operators for Tracking</a>, which out performed all the trackers we had tried previously and satisfied our requirement for box tracking.
+
 
   <h4>What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?</h4>
-  To get a more stable object box tracking algorithm, we turned to more recent deep learning techniques, and found <a href="https://arxiv.org/abs/1611.09224">ECO</a> out performs all the trackers and satisfies our requirement for video prediciton. 
+  To get a more stable object box tracking algorithm, we turned to more recent deep learning techniques, and found <a href="https://arxiv.org/abs/1611.09224">ECO</a> out performs all the trackers and satisfies our requirement for video prediciton.
 <br>
-Eco addresses both problems of computational complexity and over-fitting. The integration of high-dimensional feature map leads to a radical increase in the number of appearance model parameters, which can easily cause the over-fitting problem. ECO uses the Factorized Convolution Operator to reduce the learning complexity, that is, it efficiently selects the filters with high energy so that there is no need to learn too many parameters for the model. 
+Eco addresses both problems of computational complexity and over-fitting. The integration of high-dimensional feature map leads to a radical increase in the number of appearance model parameters, which can easily cause the over-fitting problem. ECO uses the Factorized Convolution Operator to reduce the learning complexity, that is, it efficiently selects the filters with high energy so that there is no need to learn too many parameters for the model.
 
 
 </ul>
@@ -92,11 +88,11 @@ Eco addresses both problems of computational complexity and over-fitting. The in
   <h3>Video Prediction of the Moving Obstacles</h3>
 <ul>
   <h4>What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?</h4>
-  Since the idea to predict the video of the obstcales in real time is a fresh idea. The data preprocess, as well as the network structure are all proposed and developed by us. The following shows the details of the code development. 
+  Since the idea to predict the video of the obstcales in real time is a fresh idea. The data preprocess, as well as the network structure are all proposed and developed by us. The following shows the details of the code development.
 <br>
-  Data-Preprocess: Since only the movement of the bounding box is of interest, to greatly improve the training time, the image data was pre-processed as follows: we first extracted the bounding box pixel knowledge in each image and created a mask the same size of the original image with zeros everywhere except for inside the bounding boxes areas, where the values were set to 1. The masks were keeping shrunken by factors of 2 until a dimension size becomes odd or below 32. All the masks were then used to build a dataset of sequences. The sequence length was a hyperparameter and also a performance indicator. Each mask was flattened before fed into the network. 
+  Data-Preprocess: Since only the movement of the bounding box is of interest, to greatly improve the training time, the image data was pre-processed as follows: we first extracted the bounding box pixel knowledge in each image and created a mask the same size of the original image with zeros everywhere except for inside the bounding boxes areas, where the values were set to 1. The masks were keeping shrunken by factors of 2 until a dimension size becomes odd or below 32. All the masks were then used to build a dataset of sequences. The sequence length was a hyperparameter and also a performance indicator. Each mask was flattened before fed into the network.
   <br>
-  Design of the video prediction network structure: the network structure is based on LSTM, since the temporal evolution of the masks is tried to be predicted. The network takes in the flattened masks and outputs a mask of the same size at the next frame. The hyperparameters related to the network are hidden state dimensions, number of LSTM layers and dropout probability. 
+  Design of the video prediction network structure: the network structure is based on LSTM, since the temporal evolution of the masks is tried to be predicted. The network takes in the flattened masks and outputs a mask of the same size at the next frame. The hyperparameters related to the network are hidden state dimensions, number of LSTM layers and dropout probability.
  <br>
 Moreover, three different techniques are tried to get better results. The first technique is Teacher Forcing, where we always use the true mask as the input to the network to get prediction of future steps of images. For the second approach,  inspired by <a href="https://arxiv.org/abs/1704.05831/">[4]</a>, we utilize an encoder-decoder framework on top of the LSTM, where we provide the network with true masks for a certain number of frames and then use the last hidden state which contains the encoded information to predict another number of frames. We firstly follows <a href="https://arxiv.org/abs/1704.05831/">[4]</a>, where only a dummy input of zeros are as the input to predict the future masks, in which case only the hidden state information is used for prediction. Not being able to get ideal results, we modified the framework by using the predicted mask as input to the next step. In this case we introduced one more hyperparameter in the fraction of the sequence used for prediction.
   <br>
@@ -139,7 +135,35 @@ We trained an ECO tracker and it's the only tracker tested that correctly tracke
 <h3>Obstacle Dynamics Prediction</h3>
 <ul><h4>How did you measure success? What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why?</h4>
     We measured success by the loss and visualization of prediction against true masks. As mentioned previously, we tried using both L1 and MSE (L2) loss in training. In addition, we tried three different training techniques. The following are the loss history for the best tuned network with different loss functions and training techniques:
-
+    <br><br>
+    <img style="width: 500px;" src="./images/loss_test_batchL1.png" alt="L1 batch">
+    <img style="width: 500px;" src="./images/loss_test_batchMSE.png" alt="L2 batch">
+    <br>
+    <img style="width: 500px;" src="./images/loss_test_recurrentL1.png" alt="L1 recurrent">
+    <img style="width: 500px;" src="./images/loss_test_recurrentMSE.png" alt="L2 recurrent">
+    <br><br>
+    The plots suggest that the network trains with both types of loss functions, altough L2 loss results in slightly lower final loss. In terms of training techniques, we only included encoder-decoder framework with dummy input since feeding output back in consistenly resulted in the CUDNN error. Between the two training techniques, the Teacher Forcing approach results in a smoother loss curve, which corresponds to a more stable training process as it is known for.
+    <br>
+    We also visualized the output from each training senarios. The following plots are :
+    <br><br>
+    <img style="width: 350px;" src="./images/batchL1_1.png" alt="">
+    <img style="width: 350px;" src="./images/batchL1_2.png" alt="">
+    <img style="width: 350px;" src="./images/batchL1_3.png" alt="">
+    <img style="width: 350px;" src="./images/batchL2_1.png" alt="">
+    <img style="width: 350px;" src="./images/batchL2_2.png" alt="">
+    <img style="width: 350px;" src="./images/batchL2_3.png" alt="">
+    <br>
+    <img style="width: 350px;" src="./images/recurrentL1_1.png" alt="">
+    <img style="width: 350px;" src="./images/recurrentL1_2.png" alt="">
+    <img style="width: 350px;" src="./images/recurrentL1_3.png" alt="">
+    <img style="width: 350px;" src="./images/recurrentL2_1.png" alt="">
+    <img style="width: 350px;" src="./images/recurrentL2_2.png" alt="">
+    <img style="width: 350px;" src="./images/recurrentL2_3.png" alt="">
+    <br>
+    <img style="width: 350px;" src="./images/truth_1.png" alt="">
+    <img style="width: 350px;" src="./images/truth_2.png" alt="">
+    <img style="width: 350px;" src="./images/truth_3.png" alt="">
+    <br><br>
     We did not manage to achieve the desired results, and there are a few potential reasons and future directions.
 
 </ul>
