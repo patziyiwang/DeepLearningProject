@@ -39,7 +39,7 @@ color: #FF9900;
 <!-- Goal -->
 <h2>Abstract</h2>
 
-  The problem that we try to tackle in this project is obstacle movement prediction, which is essential in research on autonomous driving with only visual information. We split the problem into two parts: first identifying and tracking the obstacle by drawing a bounding box around it, and then predicting the movement of the bounding box instead of the whole image.
+  The problem that we try to tackle in this project is obstacle movement prediction, which is essential in research on autonomous driving with only visual information. We split the problem into two parts: first identifying and tracking the obstacle by drawing a bounding box around it, and then predicting the movement of the bounding box instead of the whole image. We found an object detection algorithm that tracks the obstacle in our problem with high accuracy and created a custom LSTM network for bounding box movement prediction. Although we didn't obtain satisfactory results, we have identified several problems with our approach, potential solutions to those problems, and verified many Deep Learning concepts learned in class.
 <br><br>
 <!-- Main Illustrative Figure -->
 <div style="text-align: center;">
@@ -118,6 +118,8 @@ Moreover, three different techniques are tried to get better results. The first 
 </h3> -->
 
 <!-- Results -->
+</div>
+
 <h2>Experiments and Results</h2>
 
 <h4>How did you measure success? What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why?</h4>
@@ -168,14 +170,17 @@ We achieved our goal by using ECO to provide a stable tracker for future predici
     <img style="width: 350px;" src="./images/truth_2.png" alt="">
     <img style="width: 350px;" src="./images/truth_3.png" alt="">
     <br><br>
-    We did not manage to achieve the desired results, and there are a few potential reasons and future directions.
+    From the plots it seems like L2 loss results in similar output regardless of the training technique, where as for L1 loss the results are drastically different. Overall, L1 loss with Teacher Forcing seems to result in data sparsity, where a small chunk of the plot is darker than the rest. With L2 loss, the network seems to be graying out the plot to reduce loss in both cases. Finally, L1 loss with Encoder Decoder training results in very noisy output.
+    <br>
+    It is clear that we did not manage to achieve the desired results, and there are a few potential reasons and future directions. First of all, the three true masks are very different from each other in terms of bounding box number, location and size. This suggests that the image stream was not captured or produced at a high enough frequency, resulting in a very difficult problem for prediction. Secondly, creating the masks as 0s and 1s might further complicate the problem since it is hard to turn 0 into 1 with matrix multiplication and vice versa. Finally, due to the problems encountered during network setup and training, the model class is very limited and might not have a good enough model within it.
+    <br>
+    For future directions on this project, we can first tackle each of the problems. For the first problem, we can increase the sampling rate such that the time difference between each frame is small. In terms of mask creation, we can normalize the masks to be zero mean or have a continuous distribution of values instead of 2 discrete ones. Finally, the network setup and training problem can be solved with more time and careful inspection of gradient and input flow. Additionally, since loss function and training technique appear to have a strong influence on the results, we can also experiment with novel loss functions and training techniques.
 
 </ul>
 
 <!-- Main Results Figure -->
 <!-- <div style="text-align: center;">
 <img style="height: 300px;" alt="" src="images/results.png"> -->
-</div>
 <div style="text-align: center;">
 <!--=<img style="height: 300px;" alt="" src="images/results.png">-->
 <br><br>
